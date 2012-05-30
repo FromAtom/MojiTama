@@ -10,6 +10,7 @@ PVector leftHandPosBuf = new PVector();
 PVector torsoPosBuf = new PVector();
 
 PVector makeCharPoint = new PVector();
+PVector menuPoint = new PVector();
 
 
 /*Images*/
@@ -19,7 +20,7 @@ PImage imgBubble;
 PImage imgMenu;
 float iconRotate = 0.0;
 int iconSize = 70;
-int menuSize = 150;
+int menuSize = 300;
 
 /*flags*/
 boolean makeCharFlag = false;
@@ -36,14 +37,14 @@ FullScreen fs;
 
 
 /*defines*/
-final int lenMenuTrigger = 430; //for compare torso and hands
+final int lenMenuTrigger = 350; //for compare torso and hands
 final int lenMakeTrigger = 70;  //for compare hands
 
-
+/*useFile*/
+useFile outputFile;
 
 void setup()
 {
-
     context = new SimpleOpenNI(this);
     fs = new FullScreen(this);
 
@@ -96,10 +97,8 @@ void draw()
 
     // update the cam
     context.update();
-    strokeWeight(1);
-    stroke(0);
 
-    //noStroke();
+    noStroke();
 
     /*
     PImage  rgbImage = context.rgbImage();
@@ -117,7 +116,7 @@ void draw()
     image(context.rgbImage(), 0, 0);
 
     
-    image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
+    //image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
 
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
@@ -125,10 +124,7 @@ void draw()
     
     
 
-    //translate(context.rgbWidth()/2, context.rgbHeight()/2);
-
-
-    iconRotate+=0.1;
+   
 }
 
 void stop()
@@ -170,9 +166,9 @@ void drawSkeleton(int userId)
     PVector torso = new PVector();
     PVector torsoPos = new PVector();
 
+    String c = "あ";
 
     //get & convert hand position
-    
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
     context.convertRealWorldToProjective(rightHand,rightHandPos);
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
@@ -205,47 +201,87 @@ void drawSkeleton(int userId)
               iconSize,
               iconSize);
 
+        //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
             makeCharFlag = true;
 
             makeCharPoint.set(rightHandPosBuf);
 
-            /*            makeCharPoint.set(leftHandPosBuf.x+abs(rightHandPosBuf.x-leftHandPosBuf.x),
-                              leftHandPosBuf.y+abs(rightHandPosBuf.y-leftHandPosBuf.y),
-                              0);
-            */
+            
         }
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuFlag = true;
+            menuPoint.set(rightHandPosBuf);
         }
     }
     else if(menuFlag){
 
-        makeCharFlag = false;
-        menuFlag = false;
+        if(abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)
+            menuFlag = false;
 
         //print image on right hand
         image(imgMenu,
-              rightHandPosBuf.x-menuSize/2,
-              rightHandPosBuf.y-menuSize/2,
+              menuPoint.x-menuSize/2,
+              menuPoint.y-menuSize/2,
               menuSize,
               menuSize);
     }
     else if(makeCharFlag){
+        int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;
+        float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
+        
+        if(iconExpandSize < 70)
+            iconExpandSize = iconSize;
 
-        //print image on left hand
+
+
+
+        if(50 >= rotateAngle){
+            c = "あ";
+            iconRotate = -150;
+        }
+        else if(80 >= rotateAngle){
+            c = "い";
+            iconRotate = -75;
+        }
+        else if(100 >= rotateAngle){
+            c = "う";
+            iconRotate = 0;
+        }
+        else if(120 >= rotateAngle){
+            c = "え";
+            iconRotate = 75;
+        }
+        else {
+            c = "お";
+            iconRotate = 150;
+        }
+
+        //print star image
         image(imgLeftHand,
-              makeCharPoint.x-iconSize/2,
-              makeCharPoint.y-iconSize/2,
-              iconSize,
-              iconSize);
+              makeCharPoint.x-iconExpandSize/2,
+              makeCharPoint.y-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
 
-        //print image on right hand
+
+        //print arrow image
+        pushMatrix();
+        translate(makeCharPoint.x, makeCharPoint.y);
+        rotate(radians(iconRotate));
+        translate(-(makeCharPoint.x), -(makeCharPoint.y));
         image(imgRightHand,
-              makeCharPoint.x-iconSize/2,
-              makeCharPoint.y-iconSize/2,
-              iconSize,
-              iconSize);
+              makeCharPoint.x-iconExpandSize/2,
+              makeCharPoint.y-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
+        popMatrix();
+
+        textSize(30);
+        text(c,makeCharPoint.x,makeCharPoint.y+textDescent());
+
+        if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger)
+            makeCharFlag = false;
     }
 
 
@@ -258,6 +294,7 @@ void drawSkeleton(int userId)
 void keyPressed() {
     if (key == 'r'){
         makeCharFlag = false;
+        menuFlag = false;
         demoFlag = false;
         jumpFlag = false;
         println("reset!!");
@@ -271,9 +308,7 @@ void keyPressed() {
 
 void onNewUser(int userId)
 {
-    //torso position
-    PVector torso = new PVector();
-    PVector torsoPos = new PVector();
+    
 
     println("onNewUser - userId: " + userId);
     println("  start pose detection");
@@ -299,13 +334,13 @@ void onEndCalibration(int userId, boolean successfull)
 {
     println("onEndCalibration - userId: " + userId + ", successfull: " + successfull);
   
-    if (successfull) 
-        { 
+    if (successfull)
+        {
             println("  User calibrated !!!");
-            context.startTrackingSkeleton(userId); 
-        } 
+            context.startTrackingSkeleton(userId);
+        }
     else 
-        { 
+        {
             println("  Failed to calibrate user !!!");
             println("  Start pose detection");
             context.startPoseDetection("Psi",userId);
