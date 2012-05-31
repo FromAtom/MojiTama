@@ -1,3 +1,15 @@
+/*
+当面の予定
+---------------------------------------------------
+・各種モジュールの関数化（比較系がでかすぎて邪魔）
+・ちくりんが作ってくれたHTML対応ファイル処理への対応
+・入力ミスが多いので、UIを快適にする。ガイド表示？
+・画像拡大のスムージング処理
+・文字表示部の拡大処理
+・他のメニュー機能実装
+・
+*/
+
 import SimpleOpenNI.*;
 import fullscreen.*;
 
@@ -62,7 +74,7 @@ int rowCharTable = 0;
 int columnCharTable = 0;
 
 /*input String buffer*/
-String inputBuffer = "あ";
+String inputBuffer = "";
 
 
 void setup()
@@ -226,6 +238,8 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
+
+        //デモ用のくず処理
         if(PVector.dist(rightHandPosBuf,menuPoint) > 170){
             if(menuPoint.y-rightHandPosBuf.y > 0){
                 outputFile.writeFile(inputBuffer);
@@ -247,6 +261,9 @@ void drawSkeleton(int userId)
               menuSize);
     }
     else if(makeCharFlag){
+
+        //この中関数化しないと死ぬ。
+
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;
         float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
