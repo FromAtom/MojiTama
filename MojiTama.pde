@@ -44,11 +44,22 @@ final int lenMakeTrigger = 70;  //for compare hands
 useFile outputFile;
 
 /*char table*/
-final char[] kanaTable= {'あ','い','う'};
+final char[][] kanaTable= {
+    {'あ','い','う','え','お'},
+    {'か','き','く','け','こ'},
+    {'さ','し','す','せ','そ'},
+    {'た','ち','つ','て','と'},
+    {'な','に','ぬ','ね','の'},
+    {'は','ひ','ふ','へ','ほ'},
+    {'ま','み','む','め','も'},
+    {'や','や','ゆ','よ','よ'},
+    {'ら','り','る','れ','ろ'},
+    {'わ','を','ん','、','。'}
+};
 
 /*char table  */
 int rowCharTable = 0;
-int columCharTable = 0;
+int columnCharTable = 0;
 
 void setup()
 {
@@ -124,11 +135,13 @@ void draw()
     
     //image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
 
+    
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
-
+    /*
     textSize(30);
-    text(ago[1],width/2,height/2);
+    text(kanaTable[rowCharTable][columnCharTable],width/2,height/2);
+    */
 }
 
 void stop()
@@ -188,8 +201,6 @@ void drawSkeleton(int userId)
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
     
-
-    
     if(!makeCharFlag && !menuFlag){
         //print image on right hand
         image(imgRightHand,
@@ -237,28 +248,56 @@ void drawSkeleton(int userId)
         if(iconExpandSize < 70)
             iconExpandSize = iconSize;
 
-
-
-
         if(50 >= rotateAngle){
-            c = "あ";
+            columnCharTable = 0;
             iconRotate = -150;
         }
         else if(80 >= rotateAngle){
-            c = "い";
+            columnCharTable = 1;
             iconRotate = -75;
         }
         else if(100 >= rotateAngle){
-            c = "う";
+            columnCharTable = 2;
             iconRotate = 0;
         }
         else if(120 >= rotateAngle){
-            c = "え";
+            columnCharTable = 3;
             iconRotate = 75;
         }
         else {
-            c = "お";
+            columnCharTable = 4;
             iconRotate = 150;
+        }
+
+        if(iconExpandSize < 110){
+            rowCharTable = 0;
+        }
+        else if(iconExpandSize < 150){
+            rowCharTable = 1;
+        }
+        else if(iconExpandSize < 180){
+            rowCharTable = 2;
+        }
+        else if(iconExpandSize < 210){
+            rowCharTable = 3;
+        }
+        else if(iconExpandSize < 240){
+            rowCharTable = 4;
+        }
+        else if(iconExpandSize < 270){
+            rowCharTable = 5;
+        }
+        else if(iconExpandSize < 300){
+            rowCharTable = 6;
+        }
+        else if(iconExpandSize < 330){
+            rowCharTable = 7;
+        }
+        else if(iconExpandSize < 360){
+            rowCharTable = 8;
+        }
+        else{
+            rowCharTable = 9;
         }
 
         //print star image
@@ -281,9 +320,14 @@ void drawSkeleton(int userId)
               iconExpandSize);
         popMatrix();
 
-        textSize(30);
-        text(c,makeCharPoint.x,makeCharPoint.y+textDescent());
+        //text output
+        textSize(iconExpandSize-60);
+        String AAA = Integer.toString(iconExpandSize);
+        float fontHeight = textDescent()-textAscent();
 
+        text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+
+        //deside Char
         if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger)
             makeCharFlag = false;
     }
@@ -295,10 +339,30 @@ void drawSkeleton(int userId)
 void keyPressed() {
     if (key == CODED) {
         switch (keyCode) {
-        case UP : println("up"); break;
-        case DOWN : println("down"); break;
-        case RIGHT : println("right"); break;
-        case LEFT : println("left"); break;
+        case UP :
+            {
+                if(--columnCharTable < 0)
+                    columnCharTable = 0;
+                break;
+            }
+        case DOWN :
+            {
+                if(++columnCharTable > 4)
+                    columnCharTable = 4;
+                break;
+            }
+        case RIGHT :
+            {
+                if(++rowCharTable > 9)
+                    rowCharTable = 9;
+                break;
+            }
+        case LEFT :
+            {
+                if(--rowCharTable < 0)
+                    rowCharTable = 0;
+                break;
+            }
         }
     }
     else{
