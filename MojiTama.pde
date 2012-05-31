@@ -145,15 +145,10 @@ void draw()
     fill(0);
     textAlign(LEFT);
     text(inputBuffer,30,42);
-
     
-      //some icon
+    //some icon
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
-    
-
-    
-    
 }
 
 void stop()
@@ -161,31 +156,31 @@ void stop()
     super.stop();
 }
 
-// draw the skeleton with the selected joints
+
+//いい加減関数名を変えるべき
 void drawSkeleton(int userId)
 {
-    // to get the 3d joint data
+    //get & convert some position
+    
     //right hand position
     PVector rightHand = new PVector();
     PVector rightHandPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
+    context.convertRealWorldToProjective(rightHand,rightHandPos);
     
-
     //left hand position
     PVector leftHand = new PVector();
-    PVector leftHandPos = new PVector();
+    PVector leftHandPos = new PVector(); 
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
+    context.convertRealWorldToProjective(leftHand,leftHandPos);
     
     //torso position
     PVector torso = new PVector();
     PVector torsoPos = new PVector();
-
-    //get & convert hand position
-    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
-    context.convertRealWorldToProjective(rightHand,rightHandPos);
-    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
-    context.convertRealWorldToProjective(leftHand,leftHandPos);
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_TORSO,torso);
     context.convertRealWorldToProjective(torso,torsoPos);
     
+
     //add in Buffer
     rightHandPosBuf.add(rightHandPos);
     leftHandPosBuf.add(leftHandPos);
@@ -193,8 +188,14 @@ void drawSkeleton(int userId)
     //calc average
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
-    
-    if(!makeCharFlag && !menuFlag){
+
+    if(demoFlag){
+        if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)){
+                demoFlag = false;
+            }
+        
+    }
+    else if(!makeCharFlag && !menuFlag){
         //print image on right hand
         image(imgRightHand,
               rightHandPosBuf.x-iconSize/2,
@@ -223,8 +224,7 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
-
-        if(abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)
+        if(PVector.dist(rightHandPosBuf,menuPoint) > 100)
             menuFlag = false;
 
         //print image on right hand
@@ -315,9 +315,6 @@ void drawSkeleton(int userId)
 
         //text output
         textSize(iconExpandSize-60);
-        String AAA = Integer.toString(iconExpandSize);
-        float fontHeight = textDescent()-textAscent();
-
         textAlign(CENTER);
         fill(255);
         text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
@@ -326,6 +323,7 @@ void drawSkeleton(int userId)
         if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
             makeCharFlag = false;
+            demoFlag = true;
         }
     }
 }
