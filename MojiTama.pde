@@ -40,8 +40,15 @@ FullScreen fs;
 final int lenMenuTrigger = 350; //for compare torso and hands
 final int lenMakeTrigger = 70;  //for compare hands
 
-/*useFile*/
+/*for use File IO*/
 useFile outputFile;
+
+/*char table*/
+final char[] kanaTable= {'あ','い','う'};
+
+/*char table  */
+int rowCharTable = 0;
+int columCharTable = 0;
 
 void setup()
 {
@@ -114,17 +121,14 @@ void draw()
     */
 
     image(context.rgbImage(), 0, 0);
-
     
     //image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
 
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
-    
-    
-    
 
-   
+    textSize(30);
+    text(ago[1],width/2,height/2);
 }
 
 void stop()
@@ -283,21 +287,28 @@ void drawSkeleton(int userId)
         if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger)
             makeCharFlag = false;
     }
-
-
-
 }
 
 //------------------------------------------------------------------
 // Key Event
 
 void keyPressed() {
-    if (key == 'r'){
-        makeCharFlag = false;
-        menuFlag = false;
-        demoFlag = false;
-        jumpFlag = false;
-        println("reset!!");
+    if (key == CODED) {
+        switch (keyCode) {
+        case UP : println("up"); break;
+        case DOWN : println("down"); break;
+        case RIGHT : println("right"); break;
+        case LEFT : println("left"); break;
+        }
+    }
+    else{
+        if (key == 'r'){
+            makeCharFlag = false;
+            menuFlag = false;
+            demoFlag = false;
+            jumpFlag = false;
+            println("reset!!");
+        }
     }
 }
 
