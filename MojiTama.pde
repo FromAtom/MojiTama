@@ -37,7 +37,7 @@ FullScreen fs;
 
 
 /*defines*/
-final int lenMenuTrigger = 350; //for compare torso and hands
+final int lenMenuTrigger = 370; //for compare torso and hands
 final int lenMakeTrigger = 70;  //for compare hands
 
 /*for use File IO*/
@@ -101,11 +101,12 @@ void setup()
     myFont = loadFont("Migu-1P-Regular-48.vlw");
     textFont(myFont);
 
+    //for use file
+    outputFile = new useFile("demo.txt");
 
     background(0);
     smooth();
     frameRate(30);
-
     size(context.rgbWidth(), context.rgbHeight());
     fs.setResolution(width, height);
 
@@ -153,6 +154,7 @@ void draw()
 
 void stop()
 {
+    outputFile.closeFile();
     super.stop();
 }
 
@@ -224,9 +226,19 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
-        if(PVector.dist(rightHandPosBuf,menuPoint) > 100)
-            menuFlag = false;
+        if(PVector.dist(rightHandPosBuf,menuPoint) > 170){
+            if(menuPoint.y-rightHandPosBuf.y > 0){
+                outputFile.writeFile(inputBuffer);
+                demoFlag = true;
+                menuFlag = false;
+            }
+            else{
 
+                demoFlag = true;
+                menuFlag = false;
+                println("Cancel");
+            }
+        }
         //print image on right hand
         image(imgMenu,
               menuPoint.x-menuSize/2,
