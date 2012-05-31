@@ -57,9 +57,13 @@ final char[][] kanaTable= {
     {'わ','を','ん','、','。'}
 };
 
-/*char table  */
+/*char table*/
 int rowCharTable = 0;
 int columnCharTable = 0;
+
+/*input String buffer*/
+String inputBuffer = "あ";
+
 
 void setup()
 {
@@ -96,7 +100,7 @@ void setup()
     //Load & Set Fonts
     myFont = loadFont("Migu-1P-Regular-48.vlw");
     textFont(myFont);
-    textAlign(CENTER);
+
 
     background(0);
     smooth();
@@ -131,40 +135,31 @@ void draw()
     }
     */
 
+    //RGB image
     image(context.rgbImage(), 0, 0);
     
-    //image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
+    //print bubble image
+    image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
+    
+    textSize(28);
+    fill(0);
+    textAlign(LEFT);
+    text(inputBuffer,30,42);
 
     
+      //some icon
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
-    /*
-    textSize(30);
-    text(kanaTable[rowCharTable][columnCharTable],width/2,height/2);
-    */
+    
+
+    
+    
 }
 
 void stop()
 {
     super.stop();
 }
-
-/*
-  void draw()
-  {
-  // update the cam
-  context.update();
-  
-  // draw depthImageMap
-  image(context.rgbImage(), 0, 0);
-    
-    
-  // draw the skeleton if it's available
-  if(context.isTrackingSkeleton(1))
-  drawSkeleton(1);
-  }
-*/
-
 
 // draw the skeleton with the selected joints
 void drawSkeleton(int userId)
@@ -182,8 +177,6 @@ void drawSkeleton(int userId)
     //torso position
     PVector torso = new PVector();
     PVector torsoPos = new PVector();
-
-    String c = "あ";
 
     //get & convert hand position
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
@@ -325,11 +318,15 @@ void drawSkeleton(int userId)
         String AAA = Integer.toString(iconExpandSize);
         float fontHeight = textDescent()-textAscent();
 
+        textAlign(CENTER);
+        fill(255);
         text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
 
         //deside Char
-        if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger)
+        if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
             makeCharFlag = false;
+        }
     }
 }
 
@@ -371,6 +368,7 @@ void keyPressed() {
             menuFlag = false;
             demoFlag = false;
             jumpFlag = false;
+            inputBuffer = "";
             println("reset!!");
         }
     }
@@ -383,8 +381,6 @@ void keyPressed() {
 
 void onNewUser(int userId)
 {
-    
-
     println("onNewUser - userId: " + userId);
     println("  start pose detection");
     
