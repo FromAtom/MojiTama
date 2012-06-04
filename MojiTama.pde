@@ -40,6 +40,11 @@ boolean menuFlag = false;
 boolean demoFlag = false;
 boolean jumpFlag = false;
 
+//foots
+boolean komojiFlag = false;
+boolean dakutenFlag = false;
+boolean handakuFlag = false;
+
 
 /*Fonts*/
 PFont myFont;
@@ -51,6 +56,8 @@ FullScreen fs;
 /*defines*/
 final int lenMenuTrigger = 370; //for compare torso and hands
 final int lenMakeTrigger = 70;  //for compare hands
+final int lenFootTrigger = 150;  //for change character table
+
 
 /*for use File IO*/
 useFile outputFile;
@@ -262,11 +269,23 @@ void drawSkeleton(int userId)
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
 
+    if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger-20 && rightFootPos.z < leftFootPos.z){
+        handakuFlag = true;
+
+        
+    }
+    else if(abs(rightFootPos.z-torsoPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
+               dakutenFlag = true;
+    }
+    else{
+        dakutenFlag = false;
+        handakuFlag = false;
+    }
+
     if(demoFlag){
         if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)){
                 demoFlag = false;
             }
-        
     }
     else if(!makeCharFlag && !menuFlag){
         //print image on right hand
@@ -284,6 +303,7 @@ void drawSkeleton(int userId)
               iconSize,
               iconSize);
 
+        /*
         //print image on left hand
         image(imgLeftHand,
               leftFootPos.x-iconSize/2,
@@ -297,15 +317,13 @@ void drawSkeleton(int userId)
               rightFootPos.y-iconSize/2,
               iconSize,
               iconSize);
-        
+        */
 
         //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
             makeCharFlag = true;
 
             makeCharPoint.set(rightHandPosBuf);
-
-            
         }
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuFlag = true;
@@ -335,8 +353,9 @@ void drawSkeleton(int userId)
               menuSize);
     }
     else if(makeCharFlag){
-
+        //--------------------------
         //この中関数化しないと死ぬ。
+        //--------------------------
 
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;
         float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
@@ -422,13 +441,47 @@ void drawSkeleton(int userId)
         fill(255);
 
 
-        text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+        //set character
 
-        //deside Char
-        if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
-            inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
-            makeCharFlag = false;
-            demoFlag = true;
+        if(komojiFlag){
+            text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+                inputBuffer = inputBuffer.concat(String.valueOf(komojiTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
+            }
+        }
+        else if(dakutenFlag){
+            text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+                inputBuffer = inputBuffer.concat(String.valueOf(dakutenTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
+            }
+        }
+        else if(handakuFlag){
+            text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+                inputBuffer = inputBuffer.concat(String.valueOf(handakuTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
+            }
+        }
+        else{
+            text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+                inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
+            }
         }
     }
 }
