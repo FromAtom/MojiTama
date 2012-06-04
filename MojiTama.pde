@@ -220,27 +220,38 @@ void drawSkeleton(int userId)
     //right hand position
     PVector rightHand = new PVector();
     PVector rightHandPos = new PVector();
-    PVector rightHandPosEx = new PVector();
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
     context.convertRealWorldToProjective(rightHand,rightHandPos);
-    rightHandPos.x = (rightHandPos.x/640.0)*1280;
-    rightHandPos.y = (rightHandPos.y/480.0)*1024;
+    convertVGAtoSXGA(rightHandPos);
 
     //left hand position
     PVector leftHand = new PVector();
-    PVector leftHandPos = new PVector(); 
+    PVector leftHandPos = new PVector();
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
     context.convertRealWorldToProjective(leftHand,leftHandPos);
-    leftHandPos.x = (leftHandPos.x/640.0)*1280;
-    leftHandPos.y = (leftHandPos.y/480.0)*1024;
+    convertVGAtoSXGA(leftHandPos);
+
 
     //torso position
     PVector torso = new PVector();
     PVector torsoPos = new PVector();
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_TORSO,torso);
     context.convertRealWorldToProjective(torso,torsoPos);
-    
-    
+    convertVGAtoSXGA(torsoPos);
+
+    //right foot position
+    PVector rightFoot = new PVector();
+    PVector rightFootPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_FOOT,rightFoot);
+    context.convertRealWorldToProjective(rightFoot,rightFootPos);
+    convertVGAtoSXGA(rightFootPos);
+
+    //left foot position
+    PVector leftFoot = new PVector();
+    PVector leftFootPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_FOOT,leftFoot);
+    context.convertRealWorldToProjective(leftFoot,leftFootPos);
+    convertVGAtoSXGA(leftFootPos);
 
 
     //add in Buffer
@@ -264,13 +275,29 @@ void drawSkeleton(int userId)
               rightHandPosBuf.y-iconSize/2,
               iconSize,
               iconSize);
-        
+
+     
         //print image on left hand
         image(imgLeftHand,
               leftHandPosBuf.x-iconSize/2,
               leftHandPosBuf.y-iconSize/2,
               iconSize,
               iconSize);
+
+        //print image on left hand
+        image(imgLeftHand,
+              leftFootPos.x-iconSize/2,
+              leftFootPos.y-iconSize/2,
+              iconSize,
+              iconSize);
+
+   //print image on right hand
+        image(imgRightHand,
+              rightFootPos.x-iconSize/2,
+              rightFootPos.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
 
         //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
@@ -405,6 +432,13 @@ void drawSkeleton(int userId)
         }
     }
 }
+
+//convert 640x480 to 1280x1024
+void convertVGAtoSXGA(PVector v){
+    v.x = (v.x/640.0)*1280;
+    v.y = (v.y/480.0)*1024;
+}
+
 
 //------------------------------------------------------------------
 // Key Event
