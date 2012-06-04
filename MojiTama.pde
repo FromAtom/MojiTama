@@ -90,7 +90,7 @@ void setup()
     }
 
     // enable RGB Map generation
-    if(context.enableRGB() == false){
+    if(context.enableRGB(1280,1024,15) == false){
         println("Can't open the RGB Map, maybe the camera is not connected!");
         exit();
         return;
@@ -179,15 +179,20 @@ void drawSkeleton(int userId)
     //right hand position
     PVector rightHand = new PVector();
     PVector rightHandPos = new PVector();
+    PVector rightHandPosEx = new PVector();
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
     context.convertRealWorldToProjective(rightHand,rightHandPos);
-    
+    rightHandPos.x = (rightHandPos.x/640.0)*1280;
+    rightHandPos.y = (rightHandPos.y/480.0)*1024;
+
     //left hand position
     PVector leftHand = new PVector();
     PVector leftHandPos = new PVector(); 
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
     context.convertRealWorldToProjective(leftHand,leftHandPos);
-    
+    leftHandPos.x = (leftHandPos.x/640.0)*1280;
+    leftHandPos.y = (leftHandPos.y/480.0)*1024;
+
     //torso position
     PVector torso = new PVector();
     PVector torsoPos = new PVector();
