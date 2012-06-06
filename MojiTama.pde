@@ -20,7 +20,6 @@ boolean autoCalib = true;
 PVector rightHandPosBuf = new PVector();
 PVector leftHandPosBuf = new PVector();
 PVector torsoPosBuf = new PVector();
-
 PVector makeCharPoint = new PVector();
 PVector menuPoint = new PVector();
 
@@ -30,9 +29,10 @@ PImage imgRightHand;
 PImage imgLeftHand;
 PImage imgBubble;
 PImage imgMenu;
-float iconRotate = 0.0;
-int iconSize = 70;
-int menuSize = 300;
+
+/*Size of images*/
+final int iconSize = 70;
+final int menuSize = 300;
 
 /*flags*/
 boolean makeCharFlag = false;
@@ -118,7 +118,7 @@ final char[][] handakuTable= {
 
 
 /*char table*/
-int rowCharTable = 0;
+
 int columnCharTable = 0;
 
 /*input String buffer*/
@@ -131,11 +131,13 @@ void setup()
     fs = new FullScreen(this);
 
     // enable Depth Map generation
+    
     if(context.enableDepth() == false){
         println("Can't open the depthMap, maybe the camera is not connected!");
         exit();
         return;
     }
+    
 
     // enable RGB Map generation
     if(context.enableRGB(1280,1024,15) == false){
@@ -271,8 +273,6 @@ void drawSkeleton(int userId)
 
     if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger-20 && rightFootPos.z < leftFootPos.z){
         handakuFlag = true;
-
-        
     }
     else if(abs(rightFootPos.z-torsoPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
                dakutenFlag = true;
@@ -281,6 +281,7 @@ void drawSkeleton(int userId)
         dakutenFlag = false;
         handakuFlag = false;
     }
+
 
     if(demoFlag){
         if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)){
@@ -302,22 +303,6 @@ void drawSkeleton(int userId)
               leftHandPosBuf.y-iconSize/2,
               iconSize,
               iconSize);
-
-        /*
-        //print image on left hand
-        image(imgLeftHand,
-              leftFootPos.x-iconSize/2,
-              leftFootPos.y-iconSize/2,
-              iconSize,
-              iconSize);
-
-   //print image on right hand
-        image(imgRightHand,
-              rightFootPos.x-iconSize/2,
-              rightFootPos.y-iconSize/2,
-              iconSize,
-              iconSize);
-        */
 
         //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
@@ -363,57 +348,8 @@ void drawSkeleton(int userId)
         if(iconExpandSize < 70)
             iconExpandSize = iconSize;
 
-        if(50 >= rotateAngle){
-            columnCharTable = 0;
-            iconRotate = -150;
-        }
-        else if(80 >= rotateAngle){
-            columnCharTable = 1;
-            iconRotate = -75;
-        }
-        else if(100 >= rotateAngle){
-            columnCharTable = 2;
-            iconRotate = 0;
-        }
-        else if(120 >= rotateAngle){
-            columnCharTable = 3;
-            iconRotate = 75;
-        }
-        else {
-            columnCharTable = 4;
-            iconRotate = 150;
-        }
+       
 
-        if(iconExpandSize < 110){
-            rowCharTable = 0;
-        }
-        else if(iconExpandSize < 150){
-            rowCharTable = 1;
-        }
-        else if(iconExpandSize < 180){
-            rowCharTable = 2;
-        }
-        else if(iconExpandSize < 210){
-            rowCharTable = 3;
-        }
-        else if(iconExpandSize < 240){
-            rowCharTable = 4;
-        }
-        else if(iconExpandSize < 270){
-            rowCharTable = 5;
-        }
-        else if(iconExpandSize < 300){
-            rowCharTable = 6;
-        }
-        else if(iconExpandSize < 330){
-            rowCharTable = 7;
-        }
-        else if(iconExpandSize < 360){
-            rowCharTable = 8;
-        }
-        else{
-            rowCharTable = 9;
-        }
 
         //print star image
         image(imgLeftHand,
@@ -422,6 +358,10 @@ void drawSkeleton(int userId)
               iconExpandSize,
               iconExpandSize);
 
+
+        int rowCharTable = convertRangeToRowNum(iconExpandSize);
+        int columnCharTable = convertAngleToColumnNum(rotateAngle);
+        float iconRotate = convertAngleToIconAngle(rotateAngle);
 
         //print arrow image
         pushMatrix();
@@ -442,7 +382,6 @@ void drawSkeleton(int userId)
 
 
         //set character
-
         if(komojiFlag){
             text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
             
@@ -486,10 +425,99 @@ void drawSkeleton(int userId)
     }
 }
 
+
+//convert Angle made by two hands to icons rotate angle
+float convertAngleToIconAngle(float rotateAngle){
+    float iconRotate;
+
+    if(50 >= rotateAngle){
+        iconRotate = -150;
+    }
+    else if(80 >= rotateAngle){
+        iconRotate = -75;
+    }
+    else if(100 >= rotateAngle){
+        iconRotate = 0;
+    }
+    else if(120 >= rotateAngle){
+        iconRotate = 75;
+    }
+    else {
+        iconRotate = 150;
+    }
+
+    return iconRotate;
+}
+
+
+//convert Angle made by two hands to column number
+int convertAngleToColumnNum(float rotateAngle){
+    int columnNum;
+
+    if(50 >= rotateAngle){
+        columnNum = 0;
+    }
+    else if(80 >= rotateAngle){
+        columnNum = 1;
+    }
+    else if(100 >= rotateAngle){
+        columnNum = 2;
+    }
+    else if(120 >= rotateAngle){
+        columnNum = 3;
+    }
+    else {
+        columnNum = 4;
+    }
+
+    return columnNum;
+}
+
+
+//convert Range of between two hands to row number
+int convertRangeToRowNum(int range){
+    int rowNum;
+
+    if(range < 110){
+        rowNum = 0;
+    }
+    else if(range < 150){
+        rowNum = 1;
+    }
+    else if(range < 180){
+        rowNum = 2;
+    }
+    else if(range < 210){
+        rowNum = 3;
+    }
+    else if(range < 240){
+        rowNum = 4;
+    }
+    else if(range < 270){
+        rowNum = 5;
+    }
+    else if(range < 300){
+        rowNum = 6;
+    }
+    else if(range < 330){
+        rowNum = 7;
+    }
+    else if(range < 360){
+        rowNum = 8;
+    }
+    else{
+        rowNum = 9;
+    }
+
+    return rowNum;
+}
+
+
+
 //convert 640x480 to 1280x1024
 void convertVGAtoSXGA(PVector v){
-    v.x = (v.x/640.0)*1280;
-    v.y = (v.y/480.0)*1024;
+    v.x = (v.x/640.0)*1280.0;
+    v.y = (v.y/480.0)*1024.0;
 }
 
 
@@ -501,26 +529,18 @@ void keyPressed() {
         switch (keyCode) {
         case UP :
             {
-                if(--columnCharTable < 0)
-                    columnCharTable = 0;
                 break;
             }
         case DOWN :
             {
-                if(++columnCharTable > 4)
-                    columnCharTable = 4;
                 break;
             }
         case RIGHT :
             {
-                if(++rowCharTable > 9)
-                    rowCharTable = 9;
                 break;
             }
         case LEFT :
             {
-                if(--rowCharTable < 0)
-                    rowCharTable = 0;
                 break;
             }
         }

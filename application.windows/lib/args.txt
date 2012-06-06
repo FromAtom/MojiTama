@@ -1,0 +1,3 @@
+ -Xms64m -Xmx256m
+MojiTama
+MojiTama.jar,core.jar,SimpleOpenNI.jar,fullscreen.jar
