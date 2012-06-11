@@ -246,7 +246,17 @@ void draw()
     //print bubble image
     image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
     
-    textSize(28);
+
+    if(fontSize == FONT_SIZE_NORMAL){
+        textSize(28);
+    }
+    else if(fontSize > FONT_SIZE_NORMAL){
+        textSize(36);
+    }
+    else{
+        textSize(18);
+    }
+
     String c = "FF" + COLOR_NAME[fontColor].substring(1);
     fill(unhex(c));
     textAlign(LEFT);
@@ -563,12 +573,16 @@ void keyPressed() {
         switch (keyCode) {
         case UP :
             {
-                
+                if(++fontSize >= FONT_SIZE_BIG){
+                    fontSize = FONT_SIZE_BIG;
+                }
                 break;
             }
         case DOWN :
             {
-                
+                if(--fontSize <= FONT_SIZE_SMALL){
+                    fontSize = FONT_SIZE_SMALL;
+                }
                 break;
             }
         case RIGHT :
@@ -597,17 +611,17 @@ void keyPressed() {
             println("reset!!");
         }
         else if (key == 't'){
+            if(fontType == FONT_GOTHIC)
+                fontType = FONT_MINCHO;
+            else
+                fontType = FONT_GOTHIC;
+
+            println(fontType);
             //font type
         }
         else if (key == 'b'){
             boldFlag = !boldFlag;
             println(boldFlag);
-        }
-        else if (key == 'l'){
-            //bigger font
-        }
-        else if (key == 's'){
-            //smaller font
         }
     }
 }
