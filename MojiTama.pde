@@ -563,25 +563,26 @@ void keyPressed() {
         switch (keyCode) {
         case UP :
             {
-                if(++fontColor >= COLOR_NUM){
-                    fontColor = COLOR_NUM-1;
-                }
-
+                
                 break;
             }
         case DOWN :
             {
-                if(--fontColor < 0){
-                    fontColor = 0;
-                }
+                
                 break;
             }
         case RIGHT :
             {
+                if(++fontColor >= COLOR_NUM){
+                    fontColor = COLOR_NUM-1;
+                }
                 break;
             }
         case LEFT :
             {
+                if(--fontColor < 0){
+                    fontColor = 0;
+                }
                 break;
             }
         }
@@ -594,6 +595,19 @@ void keyPressed() {
             jumpFlag = false;
             inputBuffer = "";
             println("reset!!");
+        }
+        else if (key == 't'){
+            //font type
+        }
+        else if (key == 'b'){
+            boldFlag = !boldFlag;
+            println(boldFlag);
+        }
+        else if (key == 'l'){
+            //bigger font
+        }
+        else if (key == 's'){
+            //smaller font
         }
     }
 }
