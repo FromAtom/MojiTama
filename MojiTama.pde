@@ -13,6 +13,46 @@
 import SimpleOpenNI.*;
 import fullscreen.*;
 
+//--------------------------------------------------------------
+/*defines*/
+final int lenMenuTrigger = 370; //for compare torso and hands
+final int lenMakeTrigger = 70;  //for compare hands
+final int lenFootTrigger = 150;  //for change character table
+
+
+/*for fonts*/
+
+//colors
+final int COLOR_BLACK = 0;
+final int COLOR_RED = 1;
+final int COLOR_BLUE = 2;
+final int COLOR_GREEN = 3;
+final int COLOR_YELLOW = 4;
+final int COLOR_NUM = 5;//COLOR数
+final String COLOR_NAME[] = {
+    "#000000", "#ff0000", "#0000ff", "#00ff00", "#ffff00"
+};
+
+//types
+final int FONT_MINCHO = 0;
+final int FONT_GOTHIC = 1;
+final int FONT_NUM = 2;//FONT数
+final String FONT_NAME[] = {
+    "ＭＳ 明朝", "ＭＳ ゴシック"
+};
+
+//size
+final int FONT_SIZE_BIG = 7;
+final int FONT_SIZE_NORMAL = 3;
+final int FONT_SIZE_SMALL = 1;
+
+//--------------------------------------------------------------
+
+
+/*Size of images*/
+final int iconSize = 70;
+final int menuSize = 300;
+
 SimpleOpenNI context;
 boolean autoCalib = true;
 
@@ -30,10 +70,9 @@ PImage imgLeftHand;
 PImage imgBubble;
 PImage imgMenu;
 
-/*Size of images*/
-final int iconSize = 70;
-final int menuSize = 300;
 
+
+//---------------------------------
 /*flags*/
 boolean makeCharFlag = false;
 boolean menuFlag = false;
@@ -45,18 +84,20 @@ boolean komojiFlag = false;
 boolean dakutenFlag = false;
 boolean handakuFlag = false;
 
+//fonts
+boolean boldFlag = false;
+int fontColor = COLOR_BLACK;
+int fontType = FONT_GOTHIC;
+int fontSize = FONT_SIZE_NORMAL;
+
+//---------------------------------
+
 
 /*Fonts*/
 PFont myFont;
 
 /*for FullScreen*/
 FullScreen fs;
-
-
-/*defines*/
-final int lenMenuTrigger = 370; //for compare torso and hands
-final int lenMakeTrigger = 70;  //for compare hands
-final int lenFootTrigger = 150;  //for change character table
 
 
 /*for use File IO*/
@@ -122,7 +163,7 @@ final char[][] handakuTable= {
 int columnCharTable = 0;
 
 /*input String buffer*/
-String inputBuffer = "";
+String inputBuffer = "ああああ";
 
 
 void setup()
@@ -166,9 +207,10 @@ void setup()
     //for use file
     outputFile = new useFile("demo.txt");
 
+    colorMode(RGB);
     background(0);
     smooth();
-    frameRate(30);
+    frameRate(15);
     size(context.rgbWidth(), context.rgbHeight());
     fs.setResolution(width, height);
 
@@ -205,7 +247,8 @@ void draw()
     image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
     
     textSize(28);
-    fill(0);
+    String c = "FF" + COLOR_NAME[fontColor].substring(1);
+    fill(unhex(c));
     textAlign(LEFT);
     text(inputBuffer,30,42);
     
@@ -338,18 +381,11 @@ void drawSkeleton(int userId)
               menuSize);
     }
     else if(makeCharFlag){
-        //--------------------------
-        //この中関数化しないと死ぬ。
-        //--------------------------
-
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;
         float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
         if(iconExpandSize < 70)
             iconExpandSize = iconSize;
-
-       
-
 
         //print star image
         image(imgLeftHand,
@@ -357,7 +393,6 @@ void drawSkeleton(int userId)
               makeCharPoint.y-iconExpandSize/2,
               iconExpandSize,
               iconExpandSize);
-
 
         int rowCharTable = convertRangeToRowNum(iconExpandSize);
         int columnCharTable = convertAngleToColumnNum(rotateAngle);
@@ -379,7 +414,6 @@ void drawSkeleton(int userId)
         textSize(iconExpandSize-60);
         textAlign(CENTER);
         fill(255);
-
 
         //set character
         if(komojiFlag){
@@ -529,10 +563,17 @@ void keyPressed() {
         switch (keyCode) {
         case UP :
             {
+                if(++fontColor >= COLOR_NUM){
+                    fontColor = COLOR_NUM-1;
+                }
+
                 break;
             }
         case DOWN :
             {
+                if(--fontColor < 0){
+                    fontColor = 0;
+                }
                 break;
             }
         case RIGHT :
