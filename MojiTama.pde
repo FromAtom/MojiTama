@@ -28,7 +28,7 @@ final int COLOR_RED = 1;
 final int COLOR_BLUE = 2;
 final int COLOR_GREEN = 3;
 final int COLOR_YELLOW = 4;
-final int COLOR_NUM = 5;//COLOR数
+final int COLOR_NUM = 5;   //COLOR数
 final String COLOR_NAME[] = {
     "#000000", "#ff0000", "#0000ff", "#00ff00", "#ffff00"
 };
@@ -36,7 +36,7 @@ final String COLOR_NAME[] = {
 //types
 final int FONT_MINCHO = 0;
 final int FONT_GOTHIC = 1;
-final int FONT_NUM = 2;//FONT数
+final int FONT_NUM = 2;   //FONT数
 final String FONT_NAME[] = {
     "ＭＳ 明朝", "ＭＳ ゴシック"
 };
@@ -50,7 +50,7 @@ final int FONT_SIZE_SMALL = 1;
 
 
 /*Size of images*/
-final int iconSize = 70;
+final int iconSize = 100;
 final int menuSize = 300;
 
 SimpleOpenNI context;
@@ -68,7 +68,6 @@ PVector menuPoint = new PVector();
 PImage imgRightHand;
 PImage imgLeftHand;
 PImage imgBubble;
-PImage imgMenu;
 
 
 
@@ -166,6 +165,9 @@ int columnCharTable = 0;
 String inputBuffer = "ああああ";
 
 
+Menu menu;
+
+
 void setup()
 {
     context = new SimpleOpenNI(this);
@@ -178,6 +180,9 @@ void setup()
         exit();
         return;
     }
+
+    println("hi!!");
+    menu = new Menu();
     
 
     // enable RGB Map generation
@@ -191,7 +196,7 @@ void setup()
     imgRightHand = loadImage("arrow.png");
     imgLeftHand = loadImage("star.png");
     imgBubble = loadImage("hukidashi.png");
-    imgMenu = loadImage("menu.png");
+    //imgMenu = loadImage("menu.png");
 
     
     // enable skeleton generation for all joints
@@ -262,6 +267,8 @@ void draw()
     textAlign(LEFT);
     text(inputBuffer,30,42);
     
+    menu.paint();
+
     //some icon
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
@@ -384,7 +391,7 @@ void drawSkeleton(int userId)
             }
         }
         //print image on right hand
-        image(imgMenu,
+        image(menu.imgMenu,
               menuPoint.x-menuSize/2,
               menuPoint.y-menuSize/2,
               menuSize,
@@ -623,6 +630,12 @@ void keyPressed() {
             boldFlag = !boldFlag;
             println(boldFlag);
         }
+        else if(key == 'a'){
+            menu.visible(true);
+        }
+        else if(key == 's'){
+            menu.visible(false);
+        }
     }
 }
 
@@ -709,4 +722,5 @@ void onEndPose(String pose,int userId)
       context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
       context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
       context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
-    */
+*/
+
