@@ -308,8 +308,7 @@ void drawSkeleton(int userId)
               rightHandPosBuf.y-iconSize/2,
               iconSize,
               iconSize);
-
-     
+        
         //print image on left hand
         image(imgLeftHand,
               leftHandPosBuf.x-iconSize/2,
@@ -331,16 +330,12 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
-        
-        if(PVector.dist(rightHandPosBuf,menuPoint) > 320){
+        if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
             menu.visible(false);
 
             if(menu.openFlag == false)
                 menuFlag = false;
         }
-
-       
-
     }
     else if(makeCharFlag){
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;

@@ -63,20 +63,18 @@ class Button
     {
         float disX = x - rightHandPosBuf.x;
         float disY = y - rightHandPosBuf.y;
+
         if(sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
             return true;
-        } 
+        }
         else {
             return false;
         }
     }
-
 }
 
 class CircleButton extends Button
 {
-
-
     CircleButton(int ix, int iy, int isize, color icolor, color ihighlight)
     {
         x = ix;
@@ -114,6 +112,6 @@ class CircleButton extends Button
         arc(x, y, size, size, 0, radians(onTime));
         noStroke();
         fill(currentcolor);
-        ellipse(x, y, size-20, size-20);
+        ellipse(x, y, size-30, size-30);
     }
 }

@@ -6,8 +6,11 @@ public class Menu {
     boolean visibleFlag;
     boolean openFlag;
     CircleButton upMenu, downMenu, rightMenu, leftMenu, coreMenu;
+
     int stepCount = 0;
     int stepSize = 50;
+    int rotateCount = -90;
+    int rotateDeg = 25;
 
     int mx;
     int my;
@@ -92,6 +95,12 @@ public class Menu {
     void reflesh(){
         
         if(visibleFlag){
+            if(rotateCount != 0){
+                rotateCount += rotateDeg;
+                if(rotateCount > 0)
+                    rotateCount = 0;
+            }
+
             if(stepCount != diff){
                 stepCount += stepSize;
                 
@@ -102,6 +111,12 @@ public class Menu {
             }
         }
         else{
+            if(rotateCount != -90){
+                rotateCount -= rotateDeg;
+                if(rotateCount <= -90)
+                    rotateCount = -90;
+            }
+
             if(stepCount != 0){
                 stepCount -= stepSize*1.5;
                 if(stepCount <= 0){
@@ -122,14 +137,22 @@ public class Menu {
 
     void display(){
         if(openFlag || visibleFlag){
+
+            pushMatrix();
+            translate(mx, my);
+            rotate(radians(rotateCount));
+            translate(-(mx), -(my));
             upMenu.display();
             downMenu.display();
             rightMenu.display();
             leftMenu.display();
+            popMatrix();
+
+           
         }
          
         if(openFlag || visibleFlag){
             coreMenu.display();
-        } 
+        }
     }
 }
