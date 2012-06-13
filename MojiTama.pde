@@ -327,31 +327,19 @@ void drawSkeleton(int userId)
             menuFlag = true;
             menuPoint.set(rightHandPosBuf);
             menu = new Menu(menuPoint);
+            menu.visible(true);
         }
     }
     else if(menuFlag){
-        /*
-        //デモ用のくず処理
-
-            if(menuPoint.y-rightHandPosBuf.y > 0){
-                outputFile.writeFile(inputBuffer);
-                demoFlag = true;
-                menuFlag = false;
-            }
-            else{
-
-                demoFlag = true;
-                menuFlag = false;
-                println("Cancel");
-            }
-        }
-        */
+        
         if(PVector.dist(rightHandPosBuf,menuPoint) > 320){
-            menuFlag = false;
             menu.visible(false);
+
+            if(menu.openFlag == false)
+                menuFlag = false;
         }
 
-        menu.visible(true);
+       
 
     }
     else if(makeCharFlag){

@@ -7,7 +7,7 @@ public class Menu {
     boolean openFlag;
     CircleButton upMenu, downMenu, rightMenu, leftMenu, coreMenu;
     int stepCount = 0;
-    int stepSize = 15;
+    int stepSize = 50;
 
     int mx;
     int my;
@@ -49,12 +49,18 @@ public class Menu {
         if(visibleFlag){
             if(locked == false) {
                 if(upMenu.update())
-                    println("OK!");
+                    visibleFlag = false;
                 
-                downMenu.update();
-                rightMenu.update();
-                leftMenu.update();
-                coreMenu.update();
+                if(downMenu.update())
+                    visibleFlag = false;
+
+                if(rightMenu.update())
+                    visibleFlag = false;
+
+                if(leftMenu.update())
+                    visibleFlag = false;
+
+                //coreMenu.update();
             }
             else {
                 locked = false;
@@ -88,7 +94,7 @@ public class Menu {
         if(visibleFlag){
             if(stepCount != diff){
                 stepCount += stepSize;
-            
+                
                 if(stepCount > diff){
                     stepCount = diff;
                     openFlag = true;
@@ -97,7 +103,7 @@ public class Menu {
         }
         else{
             if(stepCount != 0){
-                stepCount -= stepSize;
+                stepCount -= stepSize*1.5;
                 if(stepCount <= 0){
                     stepCount = 0;
                     openFlag = false;
