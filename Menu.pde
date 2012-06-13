@@ -5,16 +5,19 @@ public class Menu {
     PImage imgMenu;
     boolean visibleFlag;
     boolean openFlag;
+
     CircleButton upMenu, downMenu, rightMenu, leftMenu, coreMenu;
+    boolean upFlag,downFlag,rightFlag,leftFlag;
 
     int stepCount = 0;
     int stepSize = 50;
     int rotateCount = -90;
-    int rotateDeg = 25;
+    int rotateDeg = 28;
 
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
+
 
 
     private void initMenu(){
@@ -27,6 +30,11 @@ public class Menu {
         rightMenu = new CircleButton(mx, my, menuSize, buttoncolor, highlight);
         leftMenu = new CircleButton(mx, my, menuSize, buttoncolor, highlight);
         
+        upFlag = false;
+        downFlag = false;
+        rightFlag = false;
+        leftFlag = false;
+
         openFlag = false;
         visibleFlag = false;
         this.imgMenu = loadImage("menu.png");
@@ -51,17 +59,25 @@ public class Menu {
     {
         if(visibleFlag){
             if(locked == false) {
-                if(upMenu.update())
+                if(upMenu.update()){
                     visibleFlag = false;
-                
-                if(downMenu.update())
-                    visibleFlag = false;
+                    upFlag = true;
+                }
 
-                if(rightMenu.update())
+                if(downMenu.update()){
                     visibleFlag = false;
+                    downFlag = true;
+                }
 
-                if(leftMenu.update())
+                if(rightMenu.update()){
                     visibleFlag = false;
+                    rightFlag = true;
+                }
+
+                if(leftMenu.update()){
+                    visibleFlag = false;
+                    leftFlag = true;
+                }
 
                 //coreMenu.update();
             }
@@ -93,7 +109,6 @@ public class Menu {
 
 
     void reflesh(){
-        
         if(visibleFlag){
             if(rotateCount != 0){
                 rotateCount += rotateDeg;
@@ -118,7 +133,7 @@ public class Menu {
             }
 
             if(stepCount != 0){
-                stepCount -= stepSize*1.5;
+                stepCount -= stepSize;
                 if(stepCount <= 0){
                     stepCount = 0;
                     openFlag = false;

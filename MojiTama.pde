@@ -109,15 +109,15 @@ useFile outputFile;
 int columnCharTable = 0;
 
 /*input String buffer*/
-String inputBuffer = "ああああ";
+String inputBuffer = "";
 
 
 Menu menu;
 boolean locked = false;
-color buttoncolor = color(204);
+color buttoncolor = color(244);
 color highlight = color(153);
-   
 color currentcolor;
+color timecolor = #4188D2;
 
 
 void setup()
@@ -333,7 +333,16 @@ void drawSkeleton(int userId)
         if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
             menu.visible(false);
 
-            if(menu.openFlag == false)
+            if(menu.openFlag == false){
+                if(menu.upFlag)
+                    outputFile.writeFile(inputBuffer);
+                else if(menu.downFlag)
+                    println("down!");
+                else if(menu.rightFlag)
+                    println("right!");
+                else if(menu.leftFlag)
+                    println("left!");
+            }
                 menuFlag = false;
         }
     }

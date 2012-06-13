@@ -7,7 +7,7 @@ class Button
     boolean over = false;
     boolean pressed = false;
 
-    int onTimeStep = 13;
+    int onTimeStep = 20;
     int onTime = 0;
     
     boolean update()
@@ -108,7 +108,7 @@ class CircleButton extends Button
         stroke(255);
         fill(currentcolor);
         ellipse(x, y, size, size);
-        fill(#4188D2);
+        fill(timecolor);
         arc(x, y, size, size, 0, radians(onTime));
         noStroke();
         fill(currentcolor);
