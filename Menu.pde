@@ -1,5 +1,5 @@
 public class Menu {
-    int coreSize = 140;
+    int coreSize = 200;
     int menuSize = int(coreSize/1.618);
     PVector menuMakePoint;
     PImage imgMenu;
@@ -7,6 +7,8 @@ public class Menu {
     boolean openFlag;
     CircleButton upMenu, downMenu, rightMenu, leftMenu, coreMenu;
     int stepCount = 0;
+    int stepSize = 15;
+
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
@@ -39,23 +41,27 @@ public class Menu {
     }
 
     void visible(boolean flag){
-
         visibleFlag = flag;
     }
 
     void update()
     {
-        if(locked == false) {
-            upMenu.update();
-            downMenu.update();
-            rightMenu.update();
-            leftMenu.update();
-            coreMenu.update();
+        if(visibleFlag){
+            if(locked == false) {
+                if(upMenu.update())
+                    println("OK!");
+                
+                downMenu.update();
+                rightMenu.update();
+                leftMenu.update();
+                coreMenu.update();
+            }
+            else {
+                locked = false;
+            }
         }
-        else {
-            locked = false;
-        }
-        
+
+
         if(mousePressed) {
             if(upMenu.pressed()) {
                 currentcolor = upMenu.basecolor;
@@ -80,20 +86,25 @@ public class Menu {
     void reflesh(){
         
         if(visibleFlag){
-            openFlag = true;
-            stepCount += 10;
-            if(stepCount > diff){
-                stepCount = diff;
+            if(stepCount != diff){
+                stepCount += stepSize;
+            
+                if(stepCount > diff){
+                    stepCount = diff;
+                    openFlag = true;
+                }
             }
         }
         else{
-            stepCount -= 10;
-            if(stepCount <= 0){
-                stepCount = 0;
-                openFlag = false;
+            if(stepCount != 0){
+                stepCount -= stepSize;
+                if(stepCount <= 0){
+                    stepCount = 0;
+                    openFlag = false;
+                }
             }
         }
-
+        
         upMenu.setPosition(mx,my-stepCount);
         downMenu.setPosition(mx,my+stepCount);
         rightMenu.setPosition(mx+stepCount,my);
@@ -104,7 +115,7 @@ public class Menu {
     }
 
     void display(){
-        if(openFlag){
+        if(openFlag || visibleFlag){
             upMenu.display();
             downMenu.display();
             rightMenu.display();
@@ -113,6 +124,6 @@ public class Menu {
          
         if(openFlag || visibleFlag){
             coreMenu.display();
-        }
+        } 
     }
 }

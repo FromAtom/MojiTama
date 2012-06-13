@@ -102,59 +102,6 @@ FullScreen fs;
 /*for use File IO*/
 useFile outputFile;
 
-/*char table*/
-final char[][] kanaTable= {
-    {'あ','い','う','え','お'},
-    {'か','き','く','け','こ'},
-    {'さ','し','す','せ','そ'},
-    {'た','ち','つ','て','と'},
-    {'な','に','ぬ','ね','の'},
-    {'は','ひ','ふ','へ','ほ'},
-    {'ま','み','む','め','も'},
-    {'や','や','ゆ','よ','よ'},
-    {'ら','り','る','れ','ろ'},
-    {'わ','を','ん','、','。'}
-};
-
-final char[][] komojiTable= {
-    {'ぁ','ぃ','ぅ','ぇ','ぉ'},
-    {'か','き','く','け','こ'},
-    {'さ','し','す','せ','そ'},
-    {'た','ち','っ','て','と'},
-    {'な','に','ぬ','ね','の'},
-    {'は','ひ','ふ','へ','ほ'},
-    {'ま','み','む','め','も'},
-    {'ゃ','ゃ','ゅ','ょ','ょ'},
-    {'ら','り','る','れ','ろ'},
-    {'わ','を','ん','、','。'}
-};
-
-final char[][] dakutenTable= {
-    {'あ','い','う','え','お'},
-    {'が','ぎ','ぐ','げ','ご'},
-    {'ざ','じ','ず','ぜ','ぞ'},
-    {'だ','ぢ','づ','で','ど'},
-    {'な','に','ぬ','ね','の'},
-    {'ば','び','ぶ','べ','ぼ'},
-    {'ま','み','む','め','も'},
-    {'や','や','ゆ','よ','よ'},
-    {'ら','り','る','れ','ろ'},
-    {'わ','を','ん','、','。'}
-};
-
-
-final char[][] handakuTable= {
-    {'あ','い','う','え','お'},
-    {'か','き','く','け','こ'},
-    {'さ','し','す','せ','そ'},
-    {'た','ち','つ','て','と'},
-    {'な','に','ぬ','ね','の'},
-    {'ぱ','ぴ','ぷ','ぺ','ぽ'},
-    {'ま','み','む','め','も'},
-    {'や','や','ゆ','よ','よ'},
-    {'ら','り','る','れ','ろ'},
-    {'わ','を','ん','、','。'}
-};
 
 
 /*char table*/
@@ -166,6 +113,11 @@ String inputBuffer = "ああああ";
 
 
 Menu menu;
+boolean locked = false;
+color buttoncolor = color(204);
+color highlight = color(153);
+   
+color currentcolor;
 
 
 void setup()
@@ -182,7 +134,7 @@ void setup()
     }
 
     println("hi!!");
-    menu = new Menu();
+    
     
 
     // enable RGB Map generation
@@ -215,7 +167,7 @@ void setup()
     colorMode(RGB);
     background(0);
     smooth();
-    frameRate(15);
+    frameRate(30);
     size(context.rgbWidth(), context.rgbHeight());
     fs.setResolution(width, height);
 
@@ -267,7 +219,8 @@ void draw()
     textAlign(LEFT);
     text(inputBuffer,30,42);
     
-    menu.paint();
+    if(menuFlag)
+        menu.reflesh();
 
     //some icon
     if(context.isTrackingSkeleton(1))
@@ -373,11 +326,13 @@ void drawSkeleton(int userId)
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuFlag = true;
             menuPoint.set(rightHandPosBuf);
+            menu = new Menu(menuPoint);
         }
     }
     else if(menuFlag){
+        /*
         //デモ用のくず処理
-        if(PVector.dist(rightHandPosBuf,menuPoint) > 320){
+
             if(menuPoint.y-rightHandPosBuf.y > 0){
                 outputFile.writeFile(inputBuffer);
                 demoFlag = true;
@@ -390,12 +345,14 @@ void drawSkeleton(int userId)
                 println("Cancel");
             }
         }
-        //print image on right hand
-        image(menu.imgMenu,
-              menuPoint.x-menuSize/2,
-              menuPoint.y-menuSize/2,
-              menuSize,
-              menuSize);
+        */
+        if(PVector.dist(rightHandPosBuf,menuPoint) > 320){
+            menuFlag = false;
+            menu.visible(false);
+        }
+
+        menu.visible(true);
+
     }
     else if(makeCharFlag){
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;

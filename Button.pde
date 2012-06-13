@@ -7,14 +7,28 @@ class Button
     boolean over = false;
     boolean pressed = false;
 
-    void update()
+    int onTimeStep = 13;
+    int onTime = 0;
+    
+    boolean update()
     {
         if(over()) {
+            onTime += onTimeStep;
+            
+            if(onTime >= 360){
+                onTime = 360;
+                basecolor = color(255);
+                return true;
+            }
+
             currentcolor = highlightcolor;
         }
         else {
+            onTime = 0;
+            basecolor = color(204);
             currentcolor = basecolor;
         }
+        return false;
     }
 
     boolean pressed()
@@ -61,6 +75,8 @@ class Button
 
 class CircleButton extends Button
 {
+
+
     CircleButton(int ix, int iy, int isize, color icolor, color ihighlight)
     {
         x = ix;
@@ -77,22 +93,27 @@ class CircleButton extends Button
         y = iy;
     }
 
-    boolean over() 
+    boolean over()
     {
         if( overCircle(x, y, size) ) {
             over = true;
             return true;
-        } 
+        }
         else {
             over = false;
             return false;
         }
     }
 
-    void display() 
+    void display()
     {
         stroke(255);
         fill(currentcolor);
         ellipse(x, y, size, size);
+        fill(#4188D2);
+        arc(x, y, size, size, 0, radians(onTime));
+        noStroke();
+        fill(currentcolor);
+        ellipse(x, y, size-20, size-20);
     }
 }
