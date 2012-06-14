@@ -2,8 +2,6 @@ public class myMenu {
     int coreSize = 200;
     int menuSize = int(coreSize/1.618);
     PVector menuMakePoint;
-    
-
 
     boolean visibleFlag;
     boolean openFlag;
@@ -19,7 +17,6 @@ public class myMenu {
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
-
 
 
     private void initMenu(){
@@ -59,7 +56,7 @@ public class myMenu {
 
     void update()
     {
-        if(visibleFlag){
+        if(visibleFlag&&openFlag){
             if(locked == false) {
                 if(upMenu.update()){
                     visibleFlag = false;

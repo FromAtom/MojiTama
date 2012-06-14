@@ -82,6 +82,7 @@ PImage imgBubble;
 /*flags*/
 boolean makeCharFlag = false;
 boolean menuFlag = false;
+boolean subMenuFlag = false;
 boolean demoFlag = false;
 boolean jumpFlag = false;
 boolean chatFlag = false;
@@ -128,6 +129,9 @@ color highlight = color(153);
 color currentcolor;
 color timecolor = #FF9200;
 PImage imgCore,imgUp,imgDown,imgRight,imgLeft;
+PImage imgSize,imgType,imgColor,imgBold;
+
+mySubMenu submenu;
 
 /*for chat*/
 myChat chat;
@@ -187,6 +191,16 @@ void setup()
     this.imgUp = loadImage("save.png");
     this.imgDown = loadImage("cancel.png");
 
+    this.imgType = loadImage("type.png");
+    this.imgColor = loadImage("color.png");
+    this.imgSize = loadImage("size.png");
+    this.imgBold = loadImage("bold.png");
+
+
+
+    PVector a = new PVector(300,300,300);
+    submenu = new mySubMenu(a);
+    menu = new myMenu(a);
     //chat = new myChat(this);
     //fs.enter();
 }
@@ -221,6 +235,9 @@ void draw()
     textAlign(LEFT);
     text(inputBuffer,30,42);
     
+    if(subMenuFlag)
+        submenu.reflesh();
+
     if(menuFlag)
         menu.reflesh();
 
@@ -578,7 +595,12 @@ void keyPressed() {
                 fontType = FONT_GOTHIC;
         }
         else if(key == 'a'){
-            menu.visible(true);
+            subMenuFlag = true;
+
+            submenu.visible(true);
+        }
+        else if(key == 'z'){
+            submenu.visible(false);
         }
         else if(key == 's'){
             chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
