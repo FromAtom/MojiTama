@@ -20,6 +20,7 @@ public class mySubMenu {
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
+    
 
     private void initMenu(){
         mx = int(menuMakePoint.x);
@@ -51,24 +52,23 @@ public class mySubMenu {
         if(visibleFlag){
             if(locked == false) {
                 
-                /*
-                if(upMenu.update()){
+                
+                if(sizeMenu.update()){
                     visibleFlag = false;
-                    upFlag = true;
+                    
                 }
 
-                if(downMenu.update()){
+                if(typeMenu.update()){
                     visibleFlag = false;
-                    downFlag = true;
+                    
                 }
 
-                if(rightMenu.update()){
+                if(colorMenu.update()){
                     visibleFlag = false;
-                    rightFlag = true;
+                    
                 }
-                */
 
-                if(leftMenu.update()){
+                if(boldMenu.update()){
                     visibleFlag = false;
                     //leftFlag = true;
                 }

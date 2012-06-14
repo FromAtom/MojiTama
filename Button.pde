@@ -7,7 +7,7 @@ class Button
     boolean over = false;
     boolean pressed = false;
 
-    int onTimeStep = 20;
+    int onTimeStep = 30;
     int onTime = 0;
     
     boolean update()

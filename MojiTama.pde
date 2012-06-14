@@ -198,9 +198,8 @@ void setup()
 
 
 
-    PVector a = new PVector(300,300,300);
-    submenu = new mySubMenu(a);
-    menu = new myMenu(a);
+    
+    
     //chat = new myChat(this);
     //fs.enter();
 }
@@ -362,8 +361,11 @@ void drawSkeleton(int userId)
                     println("チャットモードを起動しています！");
                     
                 }
-                else if(menu.leftFlag)
-                    println("left!");
+                else if(menu.leftFlag){
+                    submenu = new mySubMenu(menuPoint);
+                    submenu.visible(true);
+                    subMenuFlag = true;
+                }
             }
             menuFlag = false;
         }
