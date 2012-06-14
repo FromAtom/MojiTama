@@ -53,7 +53,7 @@ final int MODE_SERVER = 0;
 final int MODE_CLIENT = 1;
 
 /*Size of images*/
-final int iconSize = 100;
+final int iconSize = 200;
 final int menuSize = 300;
 
 //--------------------------------------------------------------
@@ -205,7 +205,6 @@ void draw()
     
     //print bubble image
     image(imgBubble, 20, 20,imgBubble.width-20,imgBubble.height-20);
-    
 
     if(fontSize == FONT_SIZE_NORMAL){
         textSize(28);
@@ -238,7 +237,6 @@ void stop()
     outputFile.closeFile();
     super.stop();
 }
-
 
 //いい加減関数名を変えるべき
 void drawSkeleton(int userId)
