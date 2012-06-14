@@ -2,7 +2,9 @@ public class myMenu {
     int coreSize = 200;
     int menuSize = int(coreSize/1.618);
     PVector menuMakePoint;
-    PImage imgMenu;
+    
+
+
     boolean visibleFlag;
     boolean openFlag;
 
@@ -10,9 +12,9 @@ public class myMenu {
     boolean upFlag,downFlag,rightFlag,leftFlag;
 
     int stepCount = 0;
-    int stepSize = 50;
-    int rotateCount = -90;
-    int rotateDeg = 28;
+    int stepSize = 45;
+    int rotateCount = -180;
+    int rotateDeg = 50;
 
     int mx;
     int my;
@@ -37,7 +39,7 @@ public class myMenu {
 
         openFlag = false;
         visibleFlag = false;
-        this.imgMenu = loadImage("menu.png");
+
     }
 
     myMenu(){
@@ -157,17 +159,17 @@ public class myMenu {
             translate(mx, my);
             rotate(radians(rotateCount));
             translate(-(mx), -(my));
-            upMenu.display();
-            downMenu.display();
-            rightMenu.display();
-            leftMenu.display();
+            upMenu.display(imgUp);
+            downMenu.display(imgDown);
+            rightMenu.display(imgRight);
+            leftMenu.display(imgLeft);
             popMatrix();
 
            
         }
          
         if(openFlag || visibleFlag){
-            coreMenu.display();
+            coreMenu.display(imgCore);
         }
     }
 }

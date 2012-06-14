@@ -126,8 +126,8 @@ boolean locked = false;
 color buttoncolor = color(244);
 color highlight = color(153);
 color currentcolor;
-color timecolor = #4188D2;
-
+color timecolor = #FF9200;
+PImage imgCore,imgUp,imgDown,imgRight,imgLeft;
 
 /*for chat*/
 myChat chat;
@@ -181,6 +181,13 @@ void setup()
     fs.setResolution(width, height);
 
     
+    this.imgCore = loadImage("core.png");
+    this.imgRight = loadImage("chat.png");
+    this.imgLeft = loadImage("setting.png");
+    this.imgUp = loadImage("save.png");
+    this.imgDown = loadImage("cancel.png");
+
+    //chat = new myChat(this);
     //fs.enter();
 }
 
@@ -197,7 +204,7 @@ void draw()
     image(context.rgbImage(), 0, 0);
     
     //print bubble image
-    image(imgBubble, 10, 10,imgBubble.width-20,imgBubble.height-20);
+    image(imgBubble, 20, 20,imgBubble.width-20,imgBubble.height-20);
     
 
     if(fontSize == FONT_SIZE_NORMAL){
@@ -338,7 +345,7 @@ void drawSkeleton(int userId)
                 else if(menu.rightFlag){
                     chatFlag = true;
                     println("チャットモードを起動しています！");
-                    chat = new myChat(this);
+                    
                 }
                 else if(menu.leftFlag)
                     println("left!");

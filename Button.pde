@@ -103,15 +103,14 @@ class CircleButton extends Button
         }
     }
 
-    void display()
+    void display(PImage menuImg)
     {
-        stroke(255);
-        fill(currentcolor);
-        ellipse(x, y, size, size);
-        fill(timecolor);
-        arc(x, y, size, size, 0, radians(onTime));
-        noStroke();
-        fill(currentcolor);
-        ellipse(x, y, size-30, size-30);
+        image(menuImg, x-menuImg.width/2, y-menuImg.height/2);
+        if(onTime > 0){
+            noFill();
+            stroke(timecolor);
+            strokeWeight(15);
+            arc(x, y, size, size, 0, radians(onTime));
+        }
     }
 }
