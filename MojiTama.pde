@@ -1,17 +1,18 @@
 /*
-当面の予定
----------------------------------------------------
-・各種モジュールの関数化（比較系がでかすぎて邪魔）
-・ちくりんが作ってくれたHTML対応ファイル処理への対応
-・入力ミスが多いので、UIを快適にする。ガイド表示？
-・画像拡大のスムージング処理
-・文字表示部の拡大処理
-・他のメニュー機能実装
-・
+  当面の予定
+  ---------------------------------------------------
+  ・各種モジュールの関数化（比較系がでかすぎて邪魔）
+  ・ちくりんが作ってくれたHTML対応ファイル処理への対応
+  ・入力ミスが多いので、UIを快適にする。ガイド表示？
+  ・画像拡大のスムージング処理
+  ・文字表示部の拡大処理
+  ・他のメニュー機能実装
+  ・
 */
 
 import SimpleOpenNI.*;
 import fullscreen.*;
+import processing.net.*;
 
 //--------------------------------------------------------------
 /*defines*/
@@ -46,12 +47,18 @@ final int FONT_SIZE_BIG = 7;
 final int FONT_SIZE_NORMAL = 3;
 final int FONT_SIZE_SMALL = 1;
 
-//--------------------------------------------------------------
 
+/*chat mode (SERVER or CLIENT)*/
+final int MODE_SERVER = 0;
+final int MODE_CLIENT = 1;
 
 /*Size of images*/
 final int iconSize = 100;
 final int menuSize = 300;
+
+//--------------------------------------------------------------
+
+
 
 SimpleOpenNI context;
 boolean autoCalib = true;
@@ -77,6 +84,7 @@ boolean makeCharFlag = false;
 boolean menuFlag = false;
 boolean demoFlag = false;
 boolean jumpFlag = false;
+boolean chatFlag = false;
 
 //foots
 boolean komojiFlag = false;
@@ -112,12 +120,17 @@ int columnCharTable = 0;
 String inputBuffer = "";
 
 
-Menu menu;
+/*for menu*/
+myMenu menu;
 boolean locked = false;
 color buttoncolor = color(244);
 color highlight = color(153);
 color currentcolor;
 color timecolor = #4188D2;
+
+
+/*for chat*/
+myChat chat;
 
 
 void setup()
@@ -132,10 +145,6 @@ void setup()
         exit();
         return;
     }
-
-    println("hi!!");
-    
-    
 
     // enable RGB Map generation
     if(context.enableRGB(1280,1024,15) == false){
@@ -171,6 +180,7 @@ void setup()
     size(context.rgbWidth(), context.rgbHeight());
     fs.setResolution(width, height);
 
+    
     //fs.enter();
 }
 
@@ -178,24 +188,10 @@ void setup()
 void draw()
 {
     background(0);
+    noStroke();
 
     // update the cam
     context.update();
-
-    noStroke();
-
-    /*
-    PImage  rgbImage = context.rgbImage();
-    int d = 10; //円の直径を定義
-    
-    // ライブカメラの映像から、円の直径の間隔ごとに、色情報を取得し、その色で円を描く
-    for(int y = d / 2 ; y < context.rgbHeight() ; y += d) {
-        for(int x = d / 2 ; x < context.rgbWidth() ; x += d) {
-            fill(rgbImage.pixels[y*context.rgbWidth() + x]);
-            ellipse(x, y, d, d);
-        }
-    }
-    */
 
     //RGB image
     image(context.rgbImage(), 0, 0);
@@ -229,6 +225,9 @@ void draw()
 
 void stop()
 {
+    if(chatFlag)
+        chat.myClient.stop();
+
     outputFile.closeFile();
     super.stop();
 }
@@ -252,7 +251,6 @@ void drawSkeleton(int userId)
     context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
     context.convertRealWorldToProjective(leftHand,leftHandPos);
     convertVGAtoSXGA(leftHandPos);
-
 
     //torso position
     PVector torso = new PVector();
@@ -288,18 +286,17 @@ void drawSkeleton(int userId)
         handakuFlag = true;
     }
     else if(abs(rightFootPos.z-torsoPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
-               dakutenFlag = true;
+        dakutenFlag = true;
     }
     else{
         dakutenFlag = false;
         handakuFlag = false;
     }
 
-
     if(demoFlag){
         if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)){
-                demoFlag = false;
-            }
+            demoFlag = false;
+        }
     }
     else if(!makeCharFlag && !menuFlag){
         //print image on right hand
@@ -325,7 +322,7 @@ void drawSkeleton(int userId)
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuFlag = true;
             menuPoint.set(rightHandPosBuf);
-            menu = new Menu(menuPoint);
+            menu = new myMenu(menuPoint);
             menu.visible(true);
         }
     }
@@ -338,12 +335,15 @@ void drawSkeleton(int userId)
                     outputFile.writeFile(inputBuffer);
                 else if(menu.downFlag)
                     println("down!");
-                else if(menu.rightFlag)
-                    println("right!");
+                else if(menu.rightFlag){
+                    chatFlag = true;
+                    println("チャットモードを起動しています！");
+                    chat = new myChat(this);
+                }
                 else if(menu.leftFlag)
                     println("left!");
             }
-                menuFlag = false;
+            menuFlag = false;
         }
     }
     else if(makeCharFlag){
@@ -571,19 +571,12 @@ void keyPressed() {
                 fontType = FONT_MINCHO;
             else
                 fontType = FONT_GOTHIC;
-
-            println(fontType);
-            //font type
-        }
-        else if (key == 'b'){
-            boldFlag = !boldFlag;
-            println(boldFlag);
         }
         else if(key == 'a'){
             menu.visible(true);
         }
         else if(key == 's'){
-            menu.visible(false);
+            chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
         }
     }
 }
@@ -651,25 +644,25 @@ void onEndPose(String pose,int userId)
 
 
 /*なにかにつかうかもしれないゴミ
-      context.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
 
-      context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
 
-      context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
 
-      context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
 
-      context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
 
-      context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
-      context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
+  context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
 */
 
