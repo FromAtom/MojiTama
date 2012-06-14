@@ -56,26 +56,26 @@ public class myMenu {
 
     void update()
     {
-        if(visibleFlag&&openFlag){
+        if(visibleFlag && openFlag){
             if(locked == false) {
                 if(upMenu.update()){
                     visibleFlag = false;
-                    upFlag = true;
+                    this.upFlag = true;
                 }
 
                 if(downMenu.update()){
                     visibleFlag = false;
-                    downFlag = true;
+                    this.downFlag = true;
                 }
 
                 if(rightMenu.update()){
                     visibleFlag = false;
-                    rightFlag = true;
+                    this.rightFlag = true;
                 }
 
                 if(leftMenu.update()){
                     visibleFlag = false;
-                    leftFlag = true;
+                    this.leftFlag = true;
                 }
 
                 //coreMenu.update();
@@ -85,7 +85,7 @@ public class myMenu {
             }
         }
 
-
+        /*
         if(mousePressed) {
             if(upMenu.pressed()) {
                 currentcolor = upMenu.basecolor;
@@ -102,8 +102,8 @@ public class myMenu {
             if(coreMenu.pressed()) {
                 currentcolor = coreMenu.basecolor;
             }
-            
-        }
+
+            }*/
     }
 
 

@@ -49,10 +49,8 @@ public class mySubMenu {
 
     void update()
     {
-        if(visibleFlag){
+        if(visibleFlag&&openFlag){
             if(locked == false) {
-                
-                
                 if(sizeMenu.update()){
                     visibleFlag = false;
                     

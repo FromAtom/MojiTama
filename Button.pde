@@ -17,16 +17,11 @@ class Button
             
             if(onTime >= 360){
                 onTime = 360;
-                basecolor = color(255);
                 return true;
             }
-
-            currentcolor = highlightcolor;
         }
         else {
             onTime = 0;
-            basecolor = color(204);
-            currentcolor = basecolor;
         }
         return false;
     }

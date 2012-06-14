@@ -196,10 +196,6 @@ void setup()
     this.imgSize = loadImage("size.png");
     this.imgBold = loadImage("bold.png");
 
-
-
-    
-    
     //chat = new myChat(this);
     //fs.enter();
 }
@@ -234,11 +230,13 @@ void draw()
     textAlign(LEFT);
     text(inputBuffer,30,42);
     
+    if(menuFlag)
+        menu.reflesh();
+
     if(subMenuFlag)
         submenu.reflesh();
 
-    if(menuFlag)
-        menu.reflesh();
+    
 
     //some icon
     if(context.isTrackingSkeleton(1))
@@ -319,55 +317,44 @@ void drawSkeleton(int userId)
             demoFlag = false;
         }
     }
-    else if(!makeCharFlag && !menuFlag){
-        //print image on right hand
-        image(imgRightHand,
-              rightHandPosBuf.x-iconSize/2,
-              rightHandPosBuf.y-iconSize/2,
-              iconSize,
-              iconSize);
-        
-        //print image on left hand
-        image(imgLeftHand,
-              leftHandPosBuf.x-iconSize/2,
-              leftHandPosBuf.y-iconSize/2,
-              iconSize,
-              iconSize);
-
-        //check MenuMode and MakeCharMode
-        if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
-            makeCharFlag = true;
-
-            makeCharPoint.set(rightHandPosBuf);
-        }
-        else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
-            menuFlag = true;
-            menuPoint.set(rightHandPosBuf);
-            menu = new myMenu(menuPoint);
-            menu.visible(true);
-        }
-    }
     else if(menuFlag){
         if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
             menu.visible(false);
 
             if(menu.openFlag == false){
-                if(menu.upFlag)
+                if(menu.upFlag){
                     outputFile.writeFile(inputBuffer);
-                else if(menu.downFlag)
+                }
+                else if(menu.downFlag){
                     println("down!");
+                }
                 else if(menu.rightFlag){
                     chatFlag = true;
                     println("チャットモードを起動しています！");
-                    
                 }
                 else if(menu.leftFlag){
                     submenu = new mySubMenu(menuPoint);
                     submenu.visible(true);
                     subMenuFlag = true;
+                    
                 }
+                menuFlag = false;
             }
-            menuFlag = false;
+        }
+
+        
+        /*
+        if(menu.openFlag == false && menu.visibleFlag == false){
+            
+            }*/
+    }
+    else if(subMenuFlag){
+        println("sub!");
+        if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+            submenu.visible(false);
+        }
+        if(submenu.openFlag == false && submenu.visibleFlag == false){
+            subMenuFlag = false;
         }
     }
     else if(makeCharFlag){
@@ -445,6 +432,37 @@ void drawSkeleton(int userId)
                 makeCharFlag = false;
                 demoFlag = true;
             }
+        }
+    }
+    else{
+        //print image on right hand
+        image(imgRightHand,
+              rightHandPosBuf.x-iconSize/2,
+              rightHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        //print image on left hand
+        image(imgLeftHand,
+              leftHandPosBuf.x-iconSize/2,
+              leftHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        //check MenuMode and MakeCharMode
+        if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
+            makeCharFlag = true;
+
+            makeCharPoint.set(rightHandPosBuf);
+        }
+        else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            menuPoint.set(rightHandPosBuf);
+            
+            
+            menuFlag = true;
+            menu = new myMenu(menuPoint);
+            menu.visible(true);
+         
         }
     }
 }
@@ -693,5 +711,35 @@ void onEndPose(String pose,int userId)
   context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
   context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
   context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
+
+
+else if(!makeCharFlag && !menuFlag && !subMenuFlag){
+        //print image on right hand
+        image(imgRightHand,
+              rightHandPosBuf.x-iconSize/2,
+              rightHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        //print image on left hand
+        image(imgLeftHand,
+              leftHandPosBuf.x-iconSize/2,
+              leftHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        //check MenuMode and MakeCharMode
+        if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
+            makeCharFlag = true;
+
+            makeCharPoint.set(rightHandPosBuf);
+        }
+        else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            menuFlag = true;
+            menuPoint.set(rightHandPosBuf);
+            menu = new myMenu(menuPoint);
+            menu.visible(true);
+        }
+    }
 */
 
