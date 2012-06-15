@@ -9,10 +9,13 @@ class Button
 
     int onTimeStep = 30;
     int onTime = 0;
-    
+
     boolean update()
     {
         if(over()) {
+            if(onTime == 0)
+                overSound.play(0);
+
             onTime += onTimeStep;
             
             if(onTime >= 360){
@@ -101,6 +104,7 @@ class CircleButton extends Button
     void display(PImage menuImg)
     {
         image(menuImg, x-menuImg.width/2, y-menuImg.height/2);
+
         if(onTime > 0){
             noFill();
             stroke(timecolor);

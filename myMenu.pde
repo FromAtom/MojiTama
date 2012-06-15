@@ -18,6 +18,7 @@ public class myMenu {
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
 
+    AudioPlayer menuSound;
 
     private void initMenu(){
         mx = int(menuMakePoint.x);
@@ -37,6 +38,8 @@ public class myMenu {
         openFlag = false;
         visibleFlag = false;
 
+        menuSound = minim.loadFile("menu.mp3",2048);
+        menuSound.play(0);
     }
 
     myMenu(){

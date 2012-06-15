@@ -13,11 +13,13 @@
 import SimpleOpenNI.*;
 import fullscreen.*;
 import processing.net.*;
+import ddf.minim.*;
 
 //--------------------------------------------------------------
 /*defines*/
-final int lenMenuTrigger = 370; //for compare torso and hands
-final int lenMakeTrigger = 70;  //for compare hands
+final int lenMenuTrigger = 430; //for compare torso and hands
+final int lenMakeCharTrigger = 370;
+final int lenMakeTrigger = 100;  //for compare hands
 final int lenFootTrigger = 150;  //for change character table
 
 
@@ -29,9 +31,10 @@ final int COLOR_RED = 1;
 final int COLOR_BLUE = 2;
 final int COLOR_GREEN = 3;
 final int COLOR_YELLOW = 4;
-final int COLOR_NUM = 5;   //COLOR数
+final int COLOR_WHITE = 5;
+final int COLOR_NUM = 6;   //COLOR数
 final String COLOR_NAME[] = {
-    "#000000", "#ff0000", "#0000ff", "#00ff00", "#ffff00"
+    "#000000", "#ff0000", "#0000ff", "#00ff00", "#ffff00", "#ffffff"
 };
 
 //types
@@ -94,7 +97,7 @@ boolean handakuFlag = false;
 
 //fonts
 boolean boldFlag = false;
-int fontColor = COLOR_BLACK;
+int fontColor = COLOR_WHITE;
 int fontType = FONT_GOTHIC;
 int fontSize = FONT_SIZE_NORMAL;
 
@@ -112,10 +115,9 @@ FullScreen fs;
 useFile outputFile;
 
 
-
 /*char table*/
-
 int columnCharTable = 0;
+
 
 /*input String buffer*/
 String inputBuffer = "";
@@ -136,6 +138,18 @@ mySubMenu submenu;
 /*for chat*/
 myChat chat;
 
+
+/*for SE*/
+Minim minim;
+AudioPlayer makeSound;
+AudioPlayer openSound_1;
+AudioPlayer openSound_2;
+AudioPlayer pushSound;
+AudioPlayer rotateSound;
+AudioPlayer overSound;
+
+int rowNumBuf = 0;
+int columnNumBuf = 0;
 
 void setup()
 {
@@ -196,6 +210,18 @@ void setup()
     this.imgSize = loadImage("size.png");
     this.imgBold = loadImage("bold.png");
 
+
+
+    minim = new Minim(this);
+    makeSound = minim.loadFile("makeSound.mp3", 2048);
+    openSound_1 = minim.loadFile("openSound1.mp3", 2048);
+    openSound_2 = minim.loadFile("openSound2.mp3", 2048);
+    pushSound = minim.loadFile("push.mp3", 2048);
+    rotateSound = minim.loadFile("rotate.mp3",2048);
+    overSound = minim.loadFile("over.mp3",2048);
+
+
+
     //chat = new myChat(this);
     //fs.enter();
 }
@@ -216,19 +242,19 @@ void draw()
     image(imgBubble, 20, 20,imgBubble.width-20,imgBubble.height-20);
 
     if(fontSize == FONT_SIZE_NORMAL){
-        textSize(28);
+        textSize(64);
     }
     else if(fontSize > FONT_SIZE_NORMAL){
-        textSize(36);
+        textSize(110);
     }
     else{
-        textSize(18);
+        textSize(32);
     }
 
     String c = "FF" + COLOR_NAME[fontColor].substring(1);
     fill(unhex(c));
     textAlign(LEFT);
-    text(inputBuffer,30,42);
+    text(inputBuffer,70,110);
     
     if(menuFlag)
         menu.reflesh();
@@ -237,7 +263,6 @@ void draw()
         submenu.reflesh();
 
     
-
     //some icon
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
@@ -301,10 +326,10 @@ void drawSkeleton(int userId)
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
 
-    if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger-20 && rightFootPos.z < leftFootPos.z){
+    if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
         handakuFlag = true;
     }
-    else if(abs(rightFootPos.z-torsoPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
+    else if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
         dakutenFlag = true;
     }
     else{
@@ -313,7 +338,7 @@ void drawSkeleton(int userId)
     }
 
     if(demoFlag){
-        if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMenuTrigger)){
+        if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger)){
             demoFlag = false;
         }
     }
@@ -358,12 +383,18 @@ void drawSkeleton(int userId)
         }
     }
     else if(makeCharFlag){
-        int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf)-iconSize;
+        // makeCharPoint.set(leftHandPosBuf.x+abs(rightHandPosBuf.x-leftHandPosBuf.x)/2,
+        // leftHandPosBuf.y+abs(rightHandPosBuf.y-leftHandPosBuf.y)/2,
+        //                0);
+
+
+        int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
         float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
+        /*
         if(iconExpandSize < 70)
             iconExpandSize = iconSize;
-
+        */
         //print star image
         image(imgLeftHand,
               makeCharPoint.x-iconExpandSize/2,
@@ -374,6 +405,17 @@ void drawSkeleton(int userId)
         int rowCharTable = convertRangeToRowNum(iconExpandSize);
         int columnCharTable = convertAngleToColumnNum(rotateAngle);
         float iconRotate = convertAngleToIconAngle(rotateAngle);
+
+        if(rowNumBuf < rowCharTable)
+            openSound_2.play(0);
+        else if(rowNumBuf > rowCharTable)
+            openSound_1.play(0);
+
+        if(columnNumBuf != columnCharTable)
+            rotateSound.play(0);
+
+        rowNumBuf = rowCharTable;
+        columnNumBuf = columnCharTable;
 
         //print arrow image
         pushMatrix();
@@ -397,7 +439,7 @@ void drawSkeleton(int userId)
             text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
             
             //deside Char
-            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
                 inputBuffer = inputBuffer.concat(String.valueOf(komojiTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;
@@ -407,7 +449,7 @@ void drawSkeleton(int userId)
             text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
 
             //deside Char
-            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
                 inputBuffer = inputBuffer.concat(String.valueOf(dakutenTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;
@@ -417,17 +459,19 @@ void drawSkeleton(int userId)
             text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
 
             //deside Char
-            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
                 inputBuffer = inputBuffer.concat(String.valueOf(handakuTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;
             }
         }
         else{
+            //text(Integer.toString(iconExpandSize),makeCharPoint.x,makeCharPoint.y+textDescent());
             text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
             
             //deside Char
-            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
                 inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;
@@ -435,13 +479,6 @@ void drawSkeleton(int userId)
         }
     }
     else{
-        //print image on right hand
-        image(imgRightHand,
-              rightHandPosBuf.x-iconSize/2,
-              rightHandPosBuf.y-iconSize/2,
-              iconSize,
-              iconSize);
-        
         //print image on left hand
         image(imgLeftHand,
               leftHandPosBuf.x-iconSize/2,
@@ -449,20 +486,35 @@ void drawSkeleton(int userId)
               iconSize,
               iconSize);
         
+        //print image on right hand
+        image(imgRightHand,
+              rightHandPosBuf.x-iconSize/2,
+              rightHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        
+        
         //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
             makeCharFlag = true;
-
+            makeSound.play(0);
             makeCharPoint.set(rightHandPosBuf);
         }
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuPoint.set(rightHandPosBuf);
-            
+            /*
+            submenu = new mySubMenu(menuPoint);
+            submenu.visible(true);
+            subMenuFlag = true;
+            */
             
             menuFlag = true;
             menu = new myMenu(menuPoint);
             menu.visible(true);
          
+            
+
         }
     }
 }
@@ -520,31 +572,31 @@ int convertAngleToColumnNum(float rotateAngle){
 int convertRangeToRowNum(int range){
     int rowNum;
 
-    if(range < 110){
+    if(range < 100){
         rowNum = 0;
     }
-    else if(range < 150){
+    else if(range < 160){
         rowNum = 1;
     }
-    else if(range < 180){
+    else if(range < 220){
         rowNum = 2;
     }
-    else if(range < 210){
+    else if(range < 280){
         rowNum = 3;
     }
-    else if(range < 240){
+    else if(range < 340){
         rowNum = 4;
     }
-    else if(range < 270){
+    else if(range < 400){
         rowNum = 5;
     }
-    else if(range < 300){
+    else if(range < 460){
         rowNum = 6;
     }
-    else if(range < 330){
+    else if(range < 520){
         rowNum = 7;
     }
-    else if(range < 360){
+    else if(range < 580){
         rowNum = 8;
     }
     else{
