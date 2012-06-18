@@ -505,19 +505,9 @@ void drawSkeleton(int userId)
     
 
     //send chat message when jump!------
-    println(torsoPos.y);
+    
 
-    if(torsoPos.y<450){
-        if(chatFlag && !jumpFlag){
-            jumpFlag = true;
-            sendSound.play(0);
-            chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
-            inputBuffer = "";
-        }
-    }
-    else{
-        jumpFlag = false;
-    }
+   
     
     //---------------------------------
 
@@ -685,7 +675,17 @@ void drawSkeleton(int userId)
                   iconSize,
                   iconSize);
         
-        
+            if(torsoPos.y < 450){
+                if(chatFlag && !jumpFlag){
+                    jumpFlag = true;
+                    sendSound.play(0);
+                    chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
+                    inputBuffer = "";
+                }
+            }
+            else{
+                jumpFlag = false;
+            }
         
             //check MenuMode and MakeCharMode
             if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
