@@ -34,6 +34,6 @@ class myChatField{
             text(message, 70, posY + 90);
             displayCount++;
         }
-        println(displayCount);
+        //println(displayCount);
     }
 }

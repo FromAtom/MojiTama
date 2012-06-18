@@ -199,8 +199,8 @@ void setup()
     context.setMirror(true);
 
     //Load & Set Fonts
-    //myFont = loadFont("Migu-1P-Regular-48.vlw");
-    myFont = loadFont("HiraginoKaku.vlw");
+    myFont = loadFont("Migu-1P-Regular-48.vlw");
+    //myFont = loadFont("HiraginoKaku.vlw");
     textFont(myFont);
 
     //for use file
@@ -495,6 +495,9 @@ void drawSkeleton(int userId)
             int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
             float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
+            if(iconExpandSize < 100)
+                iconExpandSize = 99;
+
             //print star image
             image(imgLeftHand,
                   makeCharPoint.x-iconExpandSize/2,

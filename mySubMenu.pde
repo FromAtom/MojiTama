@@ -11,8 +11,6 @@ public class mySubMenu {
     CircleButton leftMenu, coreMenu, sizeMenu, typeMenu, boldMenu;
     CircleButton gothicMenu,minchoMenu,thickMenu,fineMenu,bigMenu,middleMenu,smallMenu;
 
-    boolean sizeFlag, typeFlag, boldFlag;
-
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
@@ -27,13 +25,15 @@ public class mySubMenu {
     int stepSize = 25;
 
 
-    int bigRadius = 0;
-    int smallRadius = 0;
-    int middleRadius = 0;
+    int bigRadius = diff;
+    int smallRadius = diff;
+    int middleRadius = diff;
     
+
+
     int typeRadius = 0;
     int boldRadius = 0;
-    int radiusSize = 50;
+    int radiusSize = 70;
 
     private void initMenu(){
         mx = int(menuMakePoint.x);
@@ -52,17 +52,9 @@ public class mySubMenu {
         middleMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
         smallMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
 
-        bigRadius = diff;
-        middleRadius = diff;
-        smallRadius = diff;
-
         unfoldFlag = false;
         openFlag = false;
         visibleFlag = false;
-
-        sizeFlag = false;
-        typeFlag = false;
-        boldFlag = false;
     }
 
     mySubMenu(PVector v){
@@ -128,7 +120,6 @@ public class mySubMenu {
                 if(boldStep > 45){
                     boldStep = 45;
                     unfoldFlag = true;
-                    openFlag = true;
                 }
             }
 
@@ -136,44 +127,74 @@ public class mySubMenu {
                 if(bigRadius != diff_3){
                     bigRadius += radiusSize;
                     
-                    if(bigRadius > diff_3)
+                    if(bigRadius >= diff_3)
                         bigRadius = diff_3;
                 }
                 if(middleRadius != diff_2){
-                    if(bigRadius >= diff_1)
+                    if(bigRadius >= diff_1){
                         middleRadius += radiusSize;
-                    
-                    if(middleRadius > diff_2)
+                    }
+
+                    if(middleRadius >= diff_2){
                         middleRadius = diff_2;
+                    }
                 }
                 if(smallRadius != diff_1){
-                    if(middleRadius >= diff_1)
+                    if(middleRadius >= diff_1){
                         smallRadius += radiusSize;
+                    }
 
-                    if(smallRadius > diff_1)
+                    if(smallRadius >= diff_1){
                         smallRadius = diff_1;
+                        openFlag = true;
+                    }
                 }
             }
-
         }
         else{
-            if(sizeStep != 0){
-                sizeStep -= stepSize;
-                if(sizeStep <= 0){
-                    sizeStep = 0;
+            if(bigRadius != diff){
+                bigRadius -= radiusSize;
+                
+                if(bigRadius <= diff){
                     unfoldFlag = false;
-                    openFlag = false;
+                    bigRadius = diff;
                 }
             }
-            if(typeStep != 0){
-                typeStep -= stepSize;
-                if(typeStep <= 0)
-                    typeStep = 0;
+            if(middleRadius != diff){
+                middleRadius -= radiusSize;
+                
+                if(middleRadius <= diff){
+                    middleRadius = diff;
+                }
             }
-            if(boldStep != 0){
-                boldStep -= stepSize;
-                if(boldStep <= 0)
-                    boldStep = 0;
+            if(smallRadius != diff){
+                smallRadius -= radiusSize;
+                
+                if(smallRadius <= diff){
+                    smallRadius = diff;
+                }
+            }
+        
+            
+            if(!unfoldFlag){
+                if(sizeStep != 0){
+                    sizeStep -= stepSize;
+                    if(sizeStep <= 0){
+                        openFlag = false;
+                        sizeStep = 0;
+                    }
+                }
+                if(typeStep != 0){
+                    typeStep -= stepSize;
+                    if(typeStep <= 0)
+                        typeStep = 0;
+                }
+                if(boldStep != 0){
+                    boldStep -= stepSize;
+                    if(boldStep <= 0){
+                        boldStep = 0;
+                    }
+                }
             }
         }
         
@@ -183,33 +204,54 @@ public class mySubMenu {
                              int(my-diff*sin(radians(typeStep))));
         boldMenu.setPosition(int(mx-diff*cos(radians(boldStep))),
                              int(my-diff*sin(radians(boldStep))));
+
         bigMenu.setPosition(int(mx-bigRadius*cos(radians(sizeStep))),
-                              int(my-bigRadius*sin(radians(sizeStep))));
+                            int(my-bigRadius*sin(radians(sizeStep))));
         middleMenu.setPosition(int(mx-middleRadius*cos(radians(sizeStep))),
-                            int(my-middleRadius*sin(radians(sizeStep))));
+                               int(my-middleRadius*sin(radians(sizeStep))));
         smallMenu.setPosition(int(mx-smallRadius*cos(radians(sizeStep))),
-                            int(my-smallRadius*sin(radians(sizeStep))));
+                              int(my-smallRadius*sin(radians(sizeStep))));
 
+        minchoMenu.setPosition(int(mx-middleRadius*cos(radians(typeStep))),
+                               int(my-middleRadius*sin(radians(typeStep))));
+        gothicMenu.setPosition(int(mx-smallRadius*cos(radians(typeStep))),
+                               int(my-smallRadius*sin(radians(typeStep))));
 
+        thickMenu.setPosition(int(mx-middleRadius*cos(radians(boldStep))),
+                              int(my-middleRadius*sin(radians(boldStep))));
+        fineMenu.setPosition(int(mx-smallRadius*cos(radians(boldStep))),
+                             int(my-smallRadius*sin(radians(boldStep))));
+
+        println("fuck"+unfoldFlag + openFlag + visibleFlag);
         update();
         display();
     }
 
     void display(){
-        if(visibleFlag || openFlag){
+
+        if(unfoldFlag){
             bigMenu.display(imgSize);
             middleMenu.display(imgSize);
             smallMenu.display(imgSize);
+            
+            gothicMenu.display(imgSize);
+            minchoMenu.display(imgSize);
 
+            thickMenu.display(imgSize);
+            fineMenu.display(imgSize);
+            
+        }
+
+        if(visibleFlag || openFlag || unfoldFlag){
             sizeMenu.display(imgSize);
             typeMenu.display(imgType);
             boldMenu.display(imgBold);
             leftMenu.display(imgLeft);
-            
+            coreMenu.display(imgCore);
         }
 
         if(openFlag || visibleFlag){
-            coreMenu.display(imgCore);
+
         }
     }
 }
