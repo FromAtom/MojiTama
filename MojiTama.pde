@@ -86,7 +86,7 @@ PImage imgBubble;
 boolean makeCharFlag = false;
 boolean demoFlag = false;
 boolean jumpFlag = false;
-boolean chatFlag = false;
+boolean chatFlag = true;
 boolean menuFlag = false;
 boolean subMenuFlag = false;
 boolean colorMenuFlag = false;
@@ -257,11 +257,8 @@ void setup()
     overSound = minim.loadFile("over.mp3",2048);
     footSound = minim.loadFile("foot.mp3",2048);
     
-    PVector a = new PVector(700,700);
-    submenu = new mySubMenu(a);
-    colormenu = new myColorMenu(a);
-    //chat = new myChat(this);
-    //fs.enter();
+   
+    chat = new myChat(this);
     
     //---------------------------------chikurin
     chatField = new myChatField();
@@ -298,11 +295,19 @@ void draw()
         textSize(32);
     }
 
-    String c = "FF" + COLOR_NAME[fontColor].substring(1);
-    fill(unhex(c));
-    textAlign(LEFT);
+    setFontOption(fontColor, fontType, boldFlag);
     text(inputBuffer,70,110);
     
+    if(chatFlag){
+        if (chat.check()) {
+            chat.readExString();
+            
+            setFontOption(chat.fontColor, chat.fontType, chat.boldFlag);
+            chatField.setMessage(chat.speakerName + " : " + chat.receivedString);
+            //println("" + chat.fontColor + chat.fontType + chat.fontSize + chat.boldFlag + chat.speakerName + chat.receivedString);
+        }
+    }
+
     if(colorMenuFlag)
         colormenu.reflesh();
 
@@ -315,6 +320,17 @@ void draw()
     //---------------------------------chikurin
     chatField.reflesh();
     //---------------------------------/chikurin
+}
+
+void setFontOption(int fColor, int fType, boolean bFlag)
+{
+    fontColor = fColor;
+    fontType = fType;
+    boldFlag = bFlag;
+
+    String c = "FF" + COLOR_NAME[fontColor].substring(1);
+    fill(unhex(c));
+    textAlign(LEFT);
 }
 
 void stop()
@@ -514,6 +530,7 @@ void drawSkeleton(int userId)
         }
         else if(subMenuFlag){
             menuFlag = false;
+
             /* if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
                 submenu.visible(false);
                 }*/
@@ -543,7 +560,6 @@ void drawSkeleton(int userId)
                   makeCharPoint.y-iconExpandSize/2,
                   iconExpandSize,
                   iconExpandSize);
-
 
             int rowCharTable = convertRangeToRowNum(iconExpandSize);
             int columnCharTable = convertAngleToColumnNum(rotateAngle);

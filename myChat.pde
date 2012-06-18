@@ -1,127 +1,148 @@
 class myChat {
-    int mode; //client or server
-    Server myServer;
-    Client myClient;
-    
-    String userName;
-  
-    String receivedString;
-    int fontColor;
-    int fontType;
-    int fontSize;
-    boolean boldFlag;
-    String speakerName;
+  int mode;
+  Server myServer;
+  Client myClient;
 
-    myChat(PApplet p, String ip, int port) {
-        myClient = new Client(p, ip, port);
-        if (myClient.active()) {
-            mode = MODE_CLIENT;
-        }
-        else {
-            mode = MODE_SERVER;
-            myServer = new Server(p, port);
-            println("ServerMode");
-        }
-    }
+  String userName;
 
-    myChat(PApplet p){
-        String ip;
-        int port;
-        try{
-            BufferedReader reader = createReader("config.txt");
-            reader.readLine();
-            ip = reader.readLine();
-            port = Integer.valueOf(reader.readLine());
-            userName = reader.readLine();
-            //println(ip + port + userName);
-        }catch(IOException e){
-            ip = "192.168.0.1";
-            port = 5204;
-            userName = "noName";
-        }
-        myClient = new Client(p, ip, port);
-        if (myClient.active()) {
-            mode = MODE_CLIENT;
-        }
-        else {
-            mode = MODE_SERVER;
-            myServer = new Server(p, port);
-            println("ServerMode");
-        }
-    }
+  String receivedString;
+  int fontColor;
+  int fontType;
+  int fontSize;
+  boolean boldFlag;
+  String speakerName;
 
-    int getMode() {
-        return(mode);
+  myChat(PApplet p, String ip, int port) {
+    myClient = new Client(p, ip, port);
+    if (myClient.active()) {
+      mode = MODE_CLIENT;
     }
+    else {
+      mode = MODE_SERVER;
+      myServer = new Server(p, port);
+      println("ServerMode");
+    }
+  }
+  myChat(PApplet p) {
+    String ip;
+    int port;
+    try {
+      BufferedReader reader = createReader("config.txt");
+      reader.readLine();
+      ip = reader.readLine();
+      port = Integer.valueOf(reader.readLine());
+      userName = reader.readLine();
+      //println(ip + port + userName);
+    }
+    catch(IOException e) {
+      ip = "192.168.0.1";
+      port = 5204;
+      userName = "noName";
+    }
+    myClient = new Client(p, ip, port);
+    if (myClient.active()) {
+      mode = MODE_CLIENT;
+    }
+    else {
+      mode = MODE_SERVER;
+      myServer = new Server(p, port);
+      println("ServerMode");
+    }
+  }
 
-    boolean check() {
-        if (mode == MODE_CLIENT) {
-            if (myClient.available() > 0) {
-                return(true);
-            }
-            else {
-                return(false);
-            }
-        }
-        else {
-            myClient = myServer.available();
-            if (myClient != null) {
-                return(true);
-            }
-            else {
-                return(false);
-            }
-        }
-    }
+  int getMode() {
+    return(mode);
+  }
 
-    char readChar() {
-        return(myClient.readChar());
+  boolean check() {
+    if (mode == MODE_CLIENT) {
+      if (myClient.available() > 0) {
+        return(true);
+      }
+      else {
+        return(false);
+      }
     }
-    String readString() {
-        return(myClient.readString());
+    else {
+      myClient = myServer.available();
+      if (myClient != null) {
+        return(true);
+      }
+      else {
+        return(false);
+      }
     }
-    String readExString() {
-        String received = myClient.readString();
-        String[] splitString = received.split(",",0);
-        fontColor = Integer.valueOf(splitString[0]);
-        fontType = Integer.valueOf(splitString[1]);
-        fontSize = Integer.valueOf(splitString[2]);
-        boldFlag = Boolean.valueOf(splitString[3]);
-        speakerName = splitString[4];
-        receivedString = splitString[5];
-        return(splitString[5]);
-    }
+  }
 
-    void write(char data) {
-        if (mode == MODE_CLIENT) {
-            myClient.write(data);
-        }
-        else {
-            myServer.write(data);
-        }
+  char readChar() {
+    return(myClient.readChar());
+  }
+  String readString() {
+    return(myClient.readString());
+  }
+  String readExString() {
+    String received = "";
+    String received_tmp;
+    String[] splitString;
+    do {
+      received_tmp = myClient.readString();
+      if (received_tmp!=null)
+        received = received + received_tmp;
+      splitString = received.split(",", 0);
+      if (splitString[0].equals("c")!=true)
+      {
+        println("");
+        println("");
+        println("");
+        println("");
+        println("破棄："+ received);
+        return("");
+      }
     }
-    void write(String data) {
-        if (mode == MODE_CLIENT) {
-            myClient.write(data);
-        }
-        else {
-            myServer.write(data);
-        }
+    while (splitString.length < 7 || splitString[0].equals("c") == false);
+    println("受信：" + received);
+    println(splitString.length);
+    fontColor = Integer.valueOf(splitString[1]);
+    fontType = Integer.valueOf(splitString[2]);
+    fontSize = Integer.valueOf(splitString[3]);
+    boldFlag = Boolean.valueOf(splitString[4]);
+    speakerName = splitString[5];
+    receivedString = splitString[6];
+    return(splitString[6]);
+  }
+
+  void write(char data) {
+    if (mode == MODE_CLIENT) {
+      myClient.write(data);
     }
-    void writeExString(String data, int fColor, int fType, int fSize, boolean bFlag) {
-        if (mode == MODE_CLIENT) {
-            myClient.write(fColor + "," + fType + "," + fSize + "," + bFlag + "," + userName + "," + data);
-        }
-        else {
-            myServer.write(fColor + "," + fType + "," + fSize + "," + bFlag + "," + userName + "," + data);
-        }
+    else {
+      myServer.write(data);
     }
-  
-    void stop(){
-        if(mode == MODE_CLIENT){
-            myClient.stop();
-        }else{
-            myServer.stop();
-        }
+  }
+  void write(String data) {
+    if (mode == MODE_CLIENT) {
+      myClient.write(data);
     }
+    else {
+      myServer.write(data);
+    }
+  }
+  void writeExString(String data, int fColor, int fType, int fSize, boolean bFlag) {
+    if (mode == MODE_CLIENT) {
+      myClient.write("c," + fColor + "," + fType + "," + fSize + "," + bFlag + "," + userName + "," + data);
+    }
+    else {
+      myServer.write("c," + fColor + "," + fType + "," + fSize + "," + bFlag + "," + userName + "," + data);
+    }
+  }
+
+  void stop() {
+    if (mode == MODE_CLIENT) {
+      myClient.stop();
+    }
+    else {
+      myServer.stop();
+    }
+  }
 }
+
