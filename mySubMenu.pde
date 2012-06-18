@@ -14,8 +14,8 @@ public class mySubMenu {
     int mx;
     int my;
     int diff = (coreSize/2+menuSize/2)+10;
-    int diff_1 = ((coreSize/2)*2+menuSize/2)+10;
-    int diff_2 = ((coreSize/2)*3+menuSize/2)+10;
+    int diff_1 = ((coreSize/2)*2+menuSize/2)+20;
+    int diff_2 = ((coreSize/2)*3+menuSize/2)+30;
     int diff_3 = ((coreSize/2)*4+menuSize/2)+10;
 
 
@@ -71,10 +71,11 @@ public class mySubMenu {
     {
         if(visibleFlag && openFlag){
             if(locked == false) {
+                /*
                 if(sizeMenu.update()){
                     visibleFlag = false;
                     
-                }
+                    }*/
 
                 if(typeMenu.update()){
                     visibleFlag = false;
@@ -87,6 +88,17 @@ public class mySubMenu {
 
                 if(leftMenu.update()){
                 }
+
+                gothicMenu.update();
+                minchoMenu.update();
+                thickMenu.update();
+                fineMenu.update();
+
+                /*
+                bigMenu.update();
+                middleMenu.update();
+                smallMenu.update();
+                */
                 //coreMenu.update();
             }
             else {
@@ -205,12 +217,14 @@ public class mySubMenu {
         boldMenu.setPosition(int(mx-diff*cos(radians(boldStep))),
                              int(my-diff*sin(radians(boldStep))));
 
+        /*
         bigMenu.setPosition(int(mx-bigRadius*cos(radians(sizeStep))),
                             int(my-bigRadius*sin(radians(sizeStep))));
         middleMenu.setPosition(int(mx-middleRadius*cos(radians(sizeStep))),
                                int(my-middleRadius*sin(radians(sizeStep))));
         smallMenu.setPosition(int(mx-smallRadius*cos(radians(sizeStep))),
                               int(my-smallRadius*sin(radians(sizeStep))));
+        */
 
         minchoMenu.setPosition(int(mx-middleRadius*cos(radians(typeStep))),
                                int(my-middleRadius*sin(radians(typeStep))));
@@ -222,7 +236,7 @@ public class mySubMenu {
         fineMenu.setPosition(int(mx-smallRadius*cos(radians(boldStep))),
                              int(my-smallRadius*sin(radians(boldStep))));
 
-        println("fuck"+unfoldFlag + openFlag + visibleFlag);
+        
         update();
         display();
     }
@@ -230,28 +244,55 @@ public class mySubMenu {
     void display(){
 
         if(unfoldFlag){
+            /*
             bigMenu.display(imgSize);
             middleMenu.display(imgSize);
             smallMenu.display(imgSize);
-            
-            gothicMenu.display(imgSize);
-            minchoMenu.display(imgSize);
+            */
 
-            thickMenu.display(imgSize);
-            fineMenu.display(imgSize);
+            gothicMenu.display(imgGothic);
+                    
+            minchoMenu.display(imgMincho);
+
+            thickMenu.display(imgThick);
+            fineMenu.display(imgFine);
             
         }
 
         if(visibleFlag || openFlag || unfoldFlag){
-            sizeMenu.display(imgSize);
+            //sizeMenu.display(imgSize);
             typeMenu.display(imgType);
             boldMenu.display(imgBold);
             leftMenu.display(imgLeft);
             coreMenu.display(imgCore);
         }
 
-        if(openFlag || visibleFlag){
+        if(openFlag && visibleFlag){
+            if(fontType == FONT_GOTHIC){
+                noFill();
+                stroke(highlight);
+                strokeWeight(9);
+                arc(gothicMenu.x, gothicMenu.y, 107, 107, 0, radians(360));
+            }
+            else{
+                noFill();
+                stroke(highlight);
+                strokeWeight(9);
+                arc(minchoMenu.x, minchoMenu.y, 107, 107, 0, radians(360));
+            }
 
+            if(boldFlag){
+                noFill();
+                stroke(highlight);
+                strokeWeight(9);
+                arc(thickMenu.x, thickMenu.y, 107, 107, 0, radians(360));
+            }
+            else{
+                noFill();
+                stroke(highlight);
+                strokeWeight(9);
+                arc(fineMenu.x, fineMenu.y, 107, 107, 0, radians(360));
+            }
         }
     }
 }

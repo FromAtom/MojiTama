@@ -133,12 +133,14 @@ String inputBuffer = "カレーはやっぱりチキンカレー！";
 myMenu menu;
 boolean locked = false;
 color buttoncolor = color(244);
-color highlight = color(153);
+//color highlight = color(153);
+color highlight = #5DEEEA;
 color currentcolor;
 color timecolor = #ffAA00;
 //color timecolor = #5DEEEA;
 PImage imgCore,imgUp,imgDown,imgRight,imgLeft;
 PImage imgSize,imgType,imgColor,imgBold;
+PImage imgThick,imgFine,imgMincho,imgGothic;
 
 mySubMenu submenu;
 
@@ -225,6 +227,11 @@ void setup()
     this.imgSize = loadImage("size.png");
     this.imgBold = loadImage("bold.png");
 
+    this.imgGothic = loadImage("gothic.png");
+    this.imgMincho = loadImage("type.png");
+    this.imgThick = loadImage("thick.png");
+    this.imgFine = loadImage("fine.png");
+
 
     //SOUNDs
     minim = new Minim(this);
@@ -238,7 +245,7 @@ void setup()
     overSound = minim.loadFile("over.mp3",2048);
     footSound = minim.loadFile("foot.mp3",2048);
     
-    PVector a = new PVector(300,300);
+    PVector a = new PVector(700,700);
     submenu = new mySubMenu(a);
     //chat = new myChat(this);
     //fs.enter();
