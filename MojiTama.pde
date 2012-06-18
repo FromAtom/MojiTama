@@ -453,6 +453,8 @@ void drawSkeleton(int userId)
     }
     //---------------------------------/chikurin
 
+
+    //foot--------------------------
     if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
         if(handakuFlag == false)
             footSound.play(0);
@@ -470,9 +472,16 @@ void drawSkeleton(int userId)
         dakutenFlag = false;
         handakuFlag = false;
     }
+    //-----------------------------
+
+
+
+
 
     if(demoFlag){
-        if((PVector.dist(rightHandPosBuf,leftHandPosBuf) > lenMakeTrigger) && (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger)){
+        if((PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMenuTrigger) &&
+           (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger) &&
+           (PVector.dist(leftHandPosBuf,menuPoint) < lenMenuTrigger)){
             demoFlag = false;
         }
     }
@@ -502,16 +511,24 @@ void drawSkeleton(int userId)
             if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
                 menu.visible(false);
             }
-
         }
         else if(subMenuFlag){
             menuFlag = false;
-            if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+            /* if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
                 submenu.visible(false);
-            }
+                }*/
             if(submenu.openFlag == false && submenu.visibleFlag == false){
                 subMenuFlag = false;
             }
+        }
+        else if(colorMenuFlag){
+            if(PVector.dist(leftHandPosBuf,menuPoint) > lenMenuTrigger){
+                colormenu.visible(false);
+            }
+            if(colormenu.openFlag == false && colormenu.visibleFlag == false){
+                colorMenuFlag = false;
+            }
+            demoFlag = true;
         }
         else if(makeCharFlag){
             int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
@@ -641,13 +658,15 @@ void drawSkeleton(int userId)
                 menuFlag = true;
                 menu = new myMenu(menuPoint);
                 menu.visible(true);
-         
-            
-
+            }
+            else if(abs(leftHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+                menuPoint.set(leftHandPosBuf);
+                colorMenuFlag = true;
+                colormenu = new myColorMenu(menuPoint);
+                colormenu.visible(true);
             }
         }
 }
-
 
 //convert Angle made by two hands to icons rotate angle
 float convertAngleToIconAngle(float rotateAngle){

@@ -59,11 +59,21 @@ class Button
 
     boolean overCircle(int x, int y, int diameter)
     {
-        //float disX = x - rightHandPosBuf.x;
-        //float disY = y - rightHandPosBuf.y;
 
-        float disX = x - mouseX;
-        float disY = y - mouseY;
+        float disX;
+        float disY;
+
+        if(colorMenuFlag){
+            disX = x - leftHandPosBuf.x;
+            disY = y - leftHandPosBuf.y;
+        }
+        else{
+            disX = x - rightHandPosBuf.x;
+            disY = y - rightHandPosBuf.y;
+        }
+
+        //float disX = x - mouseX;
+        //float disY = y - mouseY;
 
 
         if(sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
