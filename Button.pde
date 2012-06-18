@@ -59,8 +59,12 @@ class Button
 
     boolean overCircle(int x, int y, int diameter)
     {
-        float disX = x - rightHandPosBuf.x;
-        float disY = y - rightHandPosBuf.y;
+        //float disX = x - rightHandPosBuf.x;
+        //float disY = y - rightHandPosBuf.y;
+
+        float disX = x - mouseX;
+        float disY = y - mouseY;
+
 
         if(sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
             return true;
@@ -104,6 +108,10 @@ class CircleButton extends Button
     void display(PImage menuImg)
     {
         image(menuImg, x-menuImg.width/2, y-menuImg.height/2);
+
+        //        fill(currentcolor);
+        //noStroke();
+        //ellipse(x, y, size, size);
 
         if(onTime > 0){
             noFill();

@@ -9,13 +9,13 @@ public class mySubMenu {
     boolean visibleFlag;
     boolean openFlag;
 
-    CircleButton leftMenu, coreMenu, sizeMenu, typeMenu, colorMenu, boldMenu;
+    CircleButton leftMenu, coreMenu, sizeMenu, typeMenu, boldMenu;
 
     int sizeStep = 0;
     int typeStep = 0;
-    int colorStep = 0;
     int boldStep = 0;
-    int stepSize = 30;
+    int stepSize = 25;
+
 
     int mx;
     int my;
@@ -30,7 +30,6 @@ public class mySubMenu {
         leftMenu = new CircleButton(mx-diff, my, menuSize, buttoncolor, highlight);
         sizeMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
         typeMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
-        colorMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
         boldMenu = new CircleButton(mx-diff, my, subMenuSize, buttoncolor, highlight);
 
         openFlag = false;
@@ -61,11 +60,6 @@ public class mySubMenu {
                     
                 }
 
-                if(colorMenu.update()){
-                    visibleFlag = false;
-                    
-                }
-
                 if(boldMenu.update()){
                     visibleFlag = false;
                     //leftFlag = true;
@@ -84,33 +78,25 @@ public class mySubMenu {
     void reflesh(){
         
         if(visibleFlag){
-            if(sizeStep != 180){
+            if(sizeStep != 135){
                 sizeStep += stepSize;
                 
-                if(sizeStep > 180){
-                    sizeStep = 180;
-                }
+                if(sizeStep > 135)
+                    sizeStep = 135;
             }
-            if(typeStep != 135){
+            if(typeStep != 90){
                 if(sizeStep >= 45)
                     typeStep += stepSize;
                 
-                if(typeStep > 135)
-                    typeStep = 135;
+                if(typeStep > 90)
+                    typeStep = 90;
             }
             if(boldStep != 90){
                 if(typeStep >= 45)
                     boldStep += stepSize;
                 
-                if(boldStep > 90)
-                    boldStep = 90;
-            }
-            if(colorStep != 90){
-                if(boldStep >= 45)
-                    colorStep += stepSize;
-                
-                if(colorStep > 45){
-                    colorStep = 45;
+                if(boldStep > 45){
+                    boldStep = 45;
                     openFlag = true;
                 }
             }
@@ -133,19 +119,20 @@ public class mySubMenu {
                 if(boldStep <= 0)
                     boldStep = 0;
             }
-            if(colorStep != 0){
-                colorStep -= stepSize;
-                if(colorStep <= 0)
-                    colorStep = 0;
-            }
         }
         
+        sizeMenu.setPosition(int(mx-diff*cos(radians(sizeStep))),int(my-diff*sin(radians(sizeStep))));
+        typeMenu.setPosition(int(mx-diff*cos(radians(typeStep))),int(my-diff*sin(radians(typeStep))));
+        boldMenu.setPosition(int(mx-diff*cos(radians(boldStep))),int(my-diff*sin(radians(boldStep))));
+
         update();
         display();
     }
 
     void display(){
+        
         if(visibleFlag || openFlag){
+            /*
             if(boldStep != 0){
                 pushMatrix();
                 translate(mx, my);
@@ -182,6 +169,10 @@ public class mySubMenu {
                 popMatrix();
             }
 
+        */
+            sizeMenu.display(imgSize);
+            typeMenu.display(imgType);
+            boldMenu.display(imgBold);
             leftMenu.display(imgLeft);
         }
 
