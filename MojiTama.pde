@@ -150,9 +150,9 @@ myColorMenu colormenu;
 
 /*for chat*/
 myChat chat;
-int chatFontColor;
-int chatFontType;
-boolean chatBoldFlag;
+int chatFontColor = COLOR_WHITE;
+int chatFontType = FONT_GOTHIC;
+boolean chatBoldFlag = false;
 
 
 /*for SE*/
@@ -447,10 +447,34 @@ void drawSkeleton(int userId)
     leftHandPosBuf.set(leftHandPos);
 
 
+    
+
+
+    //foot--------------------------
+    if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
+        if(handakuFlag == false)
+            footSound.play(0);
+
+        handakuFlag = true;
+    }
+    else if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
+        if(dakutenFlag == false)
+            footSound.play(0);
+        dakutenFlag = true;
+    }
+    else{
+        if(dakutenFlag || handakuFlag)
+            footSound.play(0);
+        dakutenFlag = false;
+        handakuFlag = false;
+    }
+    //-----------------------------
+
+    
     //---------------------------------chikurin
     //println("left:" + leftHandPosBuf.x);
     //println("torso:" + torsoPos.x);
-    
+        
     //one character clear from ibuffer
     if(menuFlag == false && makeCharFlag == false){
         if(abs(leftHandPos.x-torsoPos.x) > 270){
@@ -482,42 +506,12 @@ void drawSkeleton(int userId)
     //---------------------------------/chikurin
 
 
-    //foot--------------------------
-    if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
-        if(handakuFlag == false)
-            footSound.play(0);
-
-        handakuFlag = true;
-    }
-    else if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
-        if(dakutenFlag == false)
-            footSound.play(0);
-        dakutenFlag = true;
-    }
-    else{
-        if(dakutenFlag || handakuFlag)
-            footSound.play(0);
-        dakutenFlag = false;
-        handakuFlag = false;
-    }
-    //-----------------------------
-
-    
-
-    //send chat message when jump!------
-    
-
-   
-    
-    //---------------------------------
-
-
-
     if(demoFlag){
         if((PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMenuTrigger) &&
            (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger) &&
            (PVector.dist(leftHandPosBuf,menuPoint) < lenMenuTrigger)){
             demoFlag = false;
+            makeCharFlag = false;
         }
     }
     else if(menuFlag){
@@ -569,6 +563,7 @@ void drawSkeleton(int userId)
             colorMenuFlag = false;
         }
         demoFlag = true;
+        makeCharFlag = true;
     }
     else if(makeCharFlag){
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
@@ -690,6 +685,7 @@ void drawSkeleton(int userId)
             jumpFlag = false;
         }
         
+
         //check MenuMode and MakeCharMode
         if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
             makeCharFlag = true;

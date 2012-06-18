@@ -6,7 +6,7 @@ class myChatField{
     int displayCount;
   
     final int windowUnderLimit = 1024;
-    final int countLimit = 100;
+    final int countLimit = 30;
     final int appearTime = 5;
     final int speed = 30;
   
