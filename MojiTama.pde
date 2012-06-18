@@ -69,7 +69,6 @@ boolean autoCalib = true;
 /*Vector data*/
 PVector rightHandPosBuf = new PVector();
 PVector leftHandPosBuf = new PVector();
-PVector torsoPosBuf = new PVector();
 PVector makeCharPoint = new PVector();
 PVector menuPoint = new PVector();
 
@@ -151,6 +150,9 @@ myColorMenu colormenu;
 
 /*for chat*/
 myChat chat;
+int chatFontColor;
+int chatFontType;
+boolean chatBoldFlag;
 
 
 /*for SE*/
@@ -164,6 +166,8 @@ AudioPlayer overSound;
 AudioPlayer one_delete;
 AudioPlayer all_delete;
 AudioPlayer footSound;
+AudioPlayer sendSound;
+AudioPlayer receiveSound;
 
 int rowNumBuf = 0;
 int columnNumBuf = 0;
@@ -256,6 +260,8 @@ void setup()
     one_delete = minim.loadFile("one_delete.mp3",2048);
     overSound = minim.loadFile("over.mp3",2048);
     footSound = minim.loadFile("foot.mp3",2048);
+    sendSound = minim.loadFile("send.mp3",2048);
+    receiveSound = minim.loadFile("receive.mp3",2048);
     
    
     chat = new myChat(this);
@@ -300,11 +306,12 @@ void draw()
     
     if(chatFlag){
         if (chat.check()) {
+            receiveSound.play(0);
             chat.readExString();
-            
-            setFontOption(chat.fontColor, chat.fontType, chat.boldFlag);
+            chatFontColor = chat.fontColor;
+            chatFontType = chat.fontType;
+            chatBoldFlag = chat.boldFlag;
             chatField.setMessage(chat.speakerName + " : " + chat.receivedString);
-            //println("" + chat.fontColor + chat.fontType + chat.fontSize + chat.boldFlag + chat.speakerName + chat.receivedString);
         }
     }
 
@@ -318,18 +325,23 @@ void draw()
         menu.reflesh();
 
     //---------------------------------chikurin
+
+    int bufColor = fontColor;
+    int bufType = fontType;
+    boolean bufBold = boldFlag;
+
+    setFontOption(chatFontColor, chatFontType, chatBoldFlag);
     chatField.reflesh();
+    setFontOption(bufColor, bufType, bufBold);
     //---------------------------------/chikurin
 }
 
 void setFontOption(int fColor, int fType, boolean bFlag)
 {
-    fontColor = fColor;
+    String c = "FF" + COLOR_NAME[fColor].substring(1);
+    fill(unhex(c));
     fontType = fType;
     boldFlag = bFlag;
-
-    String c = "FF" + COLOR_NAME[fontColor].substring(1);
-    fill(unhex(c));
     textAlign(LEFT);
 }
 
@@ -490,7 +502,24 @@ void drawSkeleton(int userId)
     }
     //-----------------------------
 
+    
 
+    //send chat message when jump!------
+    println(torsoPos.y);
+
+    if(torsoPos.y<450){
+        if(chatFlag && !jumpFlag){
+            jumpFlag = true;
+            sendSound.play(0);
+            chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
+            inputBuffer = "";
+        }
+    }
+    else{
+        jumpFlag = false;
+    }
+    
+    //---------------------------------
 
 
 
@@ -502,17 +531,18 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
-            //メニューが閉じきったらフラグを確認する。
+            //check menu flags
             if(menu.visibleFlag == false){
                 if(menu.upFlag){
                     outputFile.writeFile(inputBuffer);
+                    chatField.setMessage("保存しました。");
                 }
                 else if(menu.downFlag){
                     println("down!");
                 }
                 else if(menu.rightFlag){
                     chatFlag = true;
-                    println("チャットモードを起動しています！");
+                    chatField.setMessage("チャットモードを起動しています...");
                 }
                 else if(menu.leftFlag){
                     submenu = new mySubMenu(menuPoint);
@@ -523,7 +553,7 @@ void drawSkeleton(int userId)
                     menuFlag = false;
             }
 
-            //手を引くとメニューを閉じる。
+            //fold menu when down hand
             if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
                 menu.visible(false);
             }
@@ -831,17 +861,14 @@ void keyPressed() {
                 fontType = FONT_GOTHIC;
         }
         else if(key == 'a'){
-            colorMenuFlag = true;
-            colormenu.visible(true);
-            //subMenuFlag = true;
-            //submenu.visible(true);
+           
         }
         else if(key == 'z'){
-            colormenu.visible(false);
-            //submenu.visible(false);
+           
         }
         else if(key == 's'){
-            chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
+            if(chatFlag)
+                chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
         }
         //---------------------------------chikurin
         else if(key == 'd'){
