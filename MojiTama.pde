@@ -18,7 +18,7 @@ import ddf.minim.*;
 //--------------------------------------------------------------
 /*defines*/
 final int lenMenuTrigger = 430; //for compare torso and hands
-final int lenMakeCharTrigger = 370;
+final int lenMakeCharTrigger = 400;
 final int lenMakeTrigger = 100;  //for compare hands
 final int lenFootTrigger = 150;  //for change character table
 
@@ -153,12 +153,15 @@ AudioPlayer openSound_2;
 AudioPlayer pushSound;
 AudioPlayer rotateSound;
 AudioPlayer overSound;
+AudioPlayer one_delete;
+AudioPlayer all_delete;
+AudioPlayer footSound;
 
 int rowNumBuf = 0;
 int columnNumBuf = 0;
 
 //---------------------------------chikurin
-myChatField chatField; 
+myChatField chatField;
 //---------------------------------/chikurin
 
 void setup()
@@ -221,17 +224,18 @@ void setup()
     this.imgBold = loadImage("bold.png");
 
 
-
     minim = new Minim(this);
     makeSound = minim.loadFile("makeSound.mp3", 2048);
     openSound_1 = minim.loadFile("openSound1.mp3", 2048);
     openSound_2 = minim.loadFile("openSound2.mp3", 2048);
     pushSound = minim.loadFile("push.mp3", 2048);
     rotateSound = minim.loadFile("rotate.mp3",2048);
+    all_delete = minim.loadFile("all_delete.mp3",2048);
+    one_delete = minim.loadFile("one_delete.mp3",2048);
     overSound = minim.loadFile("over.mp3",2048);
-
-
-
+    footSound = minim.loadFile("foot.mp3",2048);
+    
+    
     //chat = new myChat(this);
     //fs.enter();
     
@@ -300,6 +304,7 @@ void drawSkeleton(int userId)
 {
     //get & convert some position
     
+    /*
     //right hand position
     PVector rightHand = new PVector();
     PVector rightHandPos = new PVector();
@@ -343,50 +348,108 @@ void drawSkeleton(int userId)
     //calc average
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
-    
+    */
+
+
+    //right hand position
+    PVector rightHand = new PVector();
+    PVector rightHandPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
+    context.convertRealWorldToProjective(rightHand,rightHandPos);
+    convertVGAtoSXGA(rightHandPos);
+
+    //left hand position
+    PVector leftHand = new PVector();
+    PVector leftHandPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
+    context.convertRealWorldToProjective(leftHand,leftHandPos);
+    convertVGAtoSXGA(leftHandPos);
+
+    //torso position
+    PVector torso = new PVector();
+    PVector torsoPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HIP,torso);
+    context.convertRealWorldToProjective(torso,torsoPos);
+    convertVGAtoSXGA(torsoPos);
+
+    //right foot position
+    PVector rightFoot = new PVector();
+    PVector rightFootPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_FOOT,rightFoot);
+    context.convertRealWorldToProjective(rightFoot,rightFootPos);
+    convertVGAtoSXGA(rightFootPos);
+
+    //left foot position
+    PVector leftFoot = new PVector();
+    PVector leftFootPos = new PVector();
+    context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_FOOT,leftFoot);
+    context.convertRealWorldToProjective(leftFoot,leftFootPos);
+    convertVGAtoSXGA(leftFootPos);
+
+
+    //add in Buffer
+    rightHandPosBuf.set(rightHandPos);
+    leftHandPosBuf.set(leftHandPos);
+
+
+
+    //print image on left hand
+    image(imgLeftHand,
+          torsoPos.x-iconSize/4,
+          torsoPos.y-iconSize/4,
+          iconSize/2,
+          iconSize/2);
+
+
+
     //---------------------------------chikurin
     //println("left:" + leftHandPosBuf.x);
     //println("torso:" + torsoPos.x);
     
     //one character clear from ibuffer
-    if(menuFlag == false && makeCharFlag == false)
-        {
-            if(abs(leftHandPos.x-torsoPos.x) > 270)
-                {
-                    if(delFlag == false)
-                        clear_ibuffer();
-                    delFlag = true;
-                }else if(abs(leftHandPos.x-torsoPos.x) <100){
+    if(menuFlag == false && makeCharFlag == false){
+            if(abs(leftHandPos.x-torsoPos.x) > 270){
+                if(delFlag == false){
+                    clear_ibuffer();
+                    one_delete.play(0);
+                }
+                delFlag = true;
+            }else if(abs(leftHandPos.x-torsoPos.x) <100){
                 delFlag = false;
             }
-        }else if(makeCharFlag)
-        {
-            delFlag = true;
-        }
+    }else if(makeCharFlag){
+        delFlag = true;
+    }
     //all character clear from ibuffer
-    if(menuFlag == false && makeCharFlag == false)
-        {
-            if(abs(rightHandPos.x-torsoPos.x) > 270)
-                {
-                    if(delFlag == false)
-                        clearAll_ibuffer();
-                    delAllFlag = true;
-                }else if(abs(rightHandPos.x-torsoPos.x) < 100){
-                delAllFlag = false;
+    if(menuFlag == false && makeCharFlag == false){
+        if(abs(rightHandPos.x-torsoPos.x) > 270){
+            if(delAllFlag == false){
+                clearAll_ibuffer();
+                all_delete.play(0);
             }
-        }else if(makeCharFlag)
-        {
             delAllFlag = true;
+        }else if(abs(rightHandPos.x-torsoPos.x) < 100){
+            delAllFlag = false;
         }
+    }else if(makeCharFlag){
+        delAllFlag = true;
+    }
     //---------------------------------/chikurin
 
     if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
+        if(handakuFlag == false)
+            footSound.play(0);
+
         handakuFlag = true;
     }
     else if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z > leftFootPos.z){
+        if(dakutenFlag == false)
+            footSound.play(0);
         dakutenFlag = true;
     }
     else{
+        if(dakutenFlag || handakuFlag)
+            footSound.play(0);
         dakutenFlag = false;
         handakuFlag = false;
     }
@@ -504,6 +567,7 @@ void drawSkeleton(int userId)
 
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
                 inputBuffer = inputBuffer.concat(String.valueOf(dakutenTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;
@@ -514,6 +578,7 @@ void drawSkeleton(int userId)
 
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
                 inputBuffer = inputBuffer.concat(String.valueOf(handakuTable[rowCharTable][columnCharTable]));
                 makeCharFlag = false;
                 demoFlag = true;

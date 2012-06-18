@@ -19,6 +19,7 @@ public class myMenu {
     int diff = (coreSize/2+menuSize/2)+10;
 
     AudioPlayer menuSound;
+    AudioPlayer select;
 
     private void initMenu(){
         mx = int(menuMakePoint.x);
@@ -38,6 +39,7 @@ public class myMenu {
         openFlag = false;
         visibleFlag = false;
 
+        select = minim.loadFile("select.mp3",2048);
         menuSound = minim.loadFile("menu.mp3",2048);
         menuSound.play(0);
     }
@@ -64,21 +66,25 @@ public class myMenu {
                 if(upMenu.update()){
                     visibleFlag = false;
                     this.upFlag = true;
+                    select.play(0);
                 }
 
                 if(downMenu.update()){
                     visibleFlag = false;
                     this.downFlag = true;
+                    select.play(0);
                 }
 
                 if(rightMenu.update()){
                     visibleFlag = false;
                     this.rightFlag = true;
+                    select.play(0);
                 }
 
                 if(leftMenu.update()){
                     visibleFlag = false;
                     this.leftFlag = true;
+                    select.play(0);
                 }
 
                 //coreMenu.update();
