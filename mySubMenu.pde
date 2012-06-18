@@ -75,7 +75,7 @@ public class mySubMenu {
                 if(sizeMenu.update()){
                     visibleFlag = false;
                     
-                    }*/
+                    }
 
                 if(typeMenu.update()){
                     visibleFlag = false;
@@ -87,12 +87,27 @@ public class mySubMenu {
                 }
 
                 if(leftMenu.update()){
+                }*/
+
+                if(gothicMenu.update()){
+                    fontType = FONT_GOTHIC;
+                    visibleFlag = false;
                 }
 
-                gothicMenu.update();
-                minchoMenu.update();
-                thickMenu.update();
-                fineMenu.update();
+                if(minchoMenu.update()){
+                    fontType = FONT_MINCHO;
+                    visibleFlag = false;
+                }
+
+                if(thickMenu.update()){
+                    boldFlag = true;
+                    visibleFlag = false;
+                }
+                
+                if(fineMenu.update()){
+                    boldFlag = false;
+                    visibleFlag = false;
+                }
 
                 /*
                 bigMenu.update();
@@ -242,31 +257,6 @@ public class mySubMenu {
     }
 
     void display(){
-
-        if(unfoldFlag){
-            /*
-            bigMenu.display(imgSize);
-            middleMenu.display(imgSize);
-            smallMenu.display(imgSize);
-            */
-
-            gothicMenu.display(imgGothic);
-                    
-            minchoMenu.display(imgMincho);
-
-            thickMenu.display(imgThick);
-            fineMenu.display(imgFine);
-            
-        }
-
-        if(visibleFlag || openFlag || unfoldFlag){
-            //sizeMenu.display(imgSize);
-            typeMenu.display(imgType);
-            boldMenu.display(imgBold);
-            leftMenu.display(imgLeft);
-            coreMenu.display(imgCore);
-        }
-
         if(openFlag && visibleFlag){
             if(fontType == FONT_GOTHIC){
                 noFill();
@@ -293,6 +283,32 @@ public class mySubMenu {
                 strokeWeight(9);
                 arc(fineMenu.x, fineMenu.y, 107, 107, 0, radians(360));
             }
+}
+
+        if(unfoldFlag){
+            /*
+            bigMenu.display(imgSize);
+            middleMenu.display(imgSize);
+            smallMenu.display(imgSize);
+            */
+
+            gothicMenu.display(imgGothic);
+                    
+            minchoMenu.display(imgMincho);
+
+            thickMenu.display(imgThick);
+            fineMenu.display(imgFine);
+            
         }
+
+        if(visibleFlag || openFlag || unfoldFlag){
+            //sizeMenu.display(imgSize);
+            typeMenu.display(imgType);
+            boldMenu.display(imgBold);
+            leftMenu.display(imgLeft);
+            coreMenu.display(imgCore);
+        }
+
+        
     }
 }

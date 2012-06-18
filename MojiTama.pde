@@ -126,7 +126,7 @@ int columnCharTable = 0;
 
 
 /*input String buffer*/
-String inputBuffer = "カレーはやっぱりチキンカレー！";
+String inputBuffer = "死は近い！！！";
 
 
 /*for menu*/
@@ -134,7 +134,7 @@ myMenu menu;
 boolean locked = false;
 color buttoncolor = color(244);
 //color highlight = color(153);
-color highlight = #5DEEEA;
+color highlight = #38B2CE;
 color currentcolor;
 color timecolor = #ffAA00;
 //color timecolor = #5DEEEA;
