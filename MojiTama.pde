@@ -101,6 +101,12 @@ int fontColor = COLOR_WHITE;
 int fontType = FONT_GOTHIC;
 int fontSize = FONT_SIZE_NORMAL;
 
+//---------------------------------chikurin
+//del flag
+boolean delFlag = false;
+boolean delAllFlag = false;
+//---------------------------------/chikurin
+
 //---------------------------------
 
 
@@ -150,6 +156,10 @@ AudioPlayer overSound;
 
 int rowNumBuf = 0;
 int columnNumBuf = 0;
+
+//---------------------------------chikurin
+myChatField chatField; 
+//---------------------------------/chikurin
 
 void setup()
 {
@@ -224,6 +234,10 @@ void setup()
 
     //chat = new myChat(this);
     //fs.enter();
+    
+    //---------------------------------chikurin
+    chatField = new myChatField();
+    //---------------------------------/chikurin
 }
 
 
@@ -266,6 +280,10 @@ void draw()
     //some icon
     if(context.isTrackingSkeleton(1))
         drawSkeleton(1);
+        
+    //---------------------------------chikurin
+    chatField.reflesh();
+    //---------------------------------/chikurin
 }
 
 void stop()
@@ -325,6 +343,42 @@ void drawSkeleton(int userId)
     //calc average
     rightHandPosBuf.mult(0.5);
     leftHandPosBuf.mult(0.5);
+    
+    //---------------------------------chikurin
+    //println("left:" + leftHandPosBuf.x);
+    //println("torso:" + torsoPos.x);
+    
+    //one character clear from ibuffer
+    if(menuFlag == false && makeCharFlag == false)
+        {
+            if(abs(leftHandPos.x-torsoPos.x) > 270)
+                {
+                    if(delFlag == false)
+                        clear_ibuffer();
+                    delFlag = true;
+                }else if(abs(leftHandPos.x-torsoPos.x) <100){
+                delFlag = false;
+            }
+        }else if(makeCharFlag)
+        {
+            delFlag = true;
+        }
+    //all character clear from ibuffer
+    if(menuFlag == false && makeCharFlag == false)
+        {
+            if(abs(rightHandPos.x-torsoPos.x) > 270)
+                {
+                    if(delFlag == false)
+                        clearAll_ibuffer();
+                    delAllFlag = true;
+                }else if(abs(rightHandPos.x-torsoPos.x) < 100){
+                delAllFlag = false;
+            }
+        }else if(makeCharFlag)
+        {
+            delAllFlag = true;
+        }
+    //---------------------------------/chikurin
 
     if(abs(rightFootPos.z-leftFootPos.z) > lenFootTrigger && rightFootPos.z < leftFootPos.z){
         handakuFlag = true;
@@ -369,9 +423,9 @@ void drawSkeleton(int userId)
 
         
         /*
-        if(menu.openFlag == false && menu.visibleFlag == false){
+          if(menu.openFlag == false && menu.visibleFlag == false){
             
-            }*/
+          }*/
     }
     else if(subMenuFlag){
         println("sub!");
@@ -392,8 +446,8 @@ void drawSkeleton(int userId)
         float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
         /*
-        if(iconExpandSize < 70)
-            iconExpandSize = iconSize;
+          if(iconExpandSize < 70)
+          iconExpandSize = iconSize;
         */
         //print star image
         image(imgLeftHand,
@@ -504,9 +558,9 @@ void drawSkeleton(int userId)
         else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
             menuPoint.set(rightHandPosBuf);
             /*
-            submenu = new mySubMenu(menuPoint);
-            submenu.visible(true);
-            subMenuFlag = true;
+              submenu = new mySubMenu(menuPoint);
+              submenu.visible(true);
+              subMenuFlag = true;
             */
             
             menuFlag = true;
@@ -677,6 +731,18 @@ void keyPressed() {
         else if(key == 's'){
             chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
         }
+        //---------------------------------chikurin
+        else if(key == 'd'){
+            clear_ibuffer();
+        }
+        else if(key == 'e'){
+            clearAll_ibuffer();
+        }
+        else if(key == 'p'){
+            chatField.setMessage("あいうえおあああああああああああああああ");
+        }
+        
+        //---------------------------------/chikurin
     }
 }
 
@@ -765,33 +831,33 @@ void onEndPose(String pose,int userId)
   context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
 
 
-else if(!makeCharFlag && !menuFlag && !subMenuFlag){
-        //print image on right hand
-        image(imgRightHand,
-              rightHandPosBuf.x-iconSize/2,
-              rightHandPosBuf.y-iconSize/2,
-              iconSize,
-              iconSize);
+  else if(!makeCharFlag && !menuFlag && !subMenuFlag){
+  //print image on right hand
+  image(imgRightHand,
+  rightHandPosBuf.x-iconSize/2,
+  rightHandPosBuf.y-iconSize/2,
+  iconSize,
+  iconSize);
         
-        //print image on left hand
-        image(imgLeftHand,
-              leftHandPosBuf.x-iconSize/2,
-              leftHandPosBuf.y-iconSize/2,
-              iconSize,
-              iconSize);
+  //print image on left hand
+  image(imgLeftHand,
+  leftHandPosBuf.x-iconSize/2,
+  leftHandPosBuf.y-iconSize/2,
+  iconSize,
+  iconSize);
         
-        //check MenuMode and MakeCharMode
-        if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
-            makeCharFlag = true;
+  //check MenuMode and MakeCharMode
+  if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
+  makeCharFlag = true;
 
-            makeCharPoint.set(rightHandPosBuf);
-        }
-        else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
-            menuFlag = true;
-            menuPoint.set(rightHandPosBuf);
-            menu = new myMenu(menuPoint);
-            menu.visible(true);
-        }
-    }
+  makeCharPoint.set(rightHandPosBuf);
+  }
+  else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+  menuFlag = true;
+  menuPoint.set(rightHandPosBuf);
+  menu = new myMenu(menuPoint);
+  menu.visible(true);
+  }
+  }
 */
 
