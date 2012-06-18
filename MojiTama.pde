@@ -120,7 +120,7 @@ FullScreen fs;
 
 /*for use File IO*/
 useFile outputFile;
-
+boolean outputCheck = false;
 
 /*char table*/
 int columnCharTable = 0;
@@ -215,7 +215,7 @@ void setup()
     textFont(myFont);
 
     //for use file
-    outputFile = new useFile("output.txt");
+    outputFile = new useFile("output");
 
     colorMode(RGB);
     background(0);
@@ -521,197 +521,200 @@ void drawSkeleton(int userId)
         }
     }
     else if(menuFlag){
-            //check menu flags
-            if(menu.visibleFlag == false){
-                if(menu.upFlag){
-                    outputFile.writeFile(inputBuffer);
+        //check menu flags
+        if(menu.visibleFlag == false){
+            if(menu.upFlag){
+                if(!outputCheck){
+                    outputFile.writeFile(inputBuffer,fontColor,fontType,fontSize,boldFlag);
                     chatField.setMessage("保存しました。");
+                    outputCheck = true;
                 }
-                else if(menu.downFlag){
-                    println("down!");
-                }
-                else if(menu.rightFlag){
-                    chatFlag = true;
-                    chatField.setMessage("チャットモードを起動しています...");
-                }
-                else if(menu.leftFlag){
-                    submenu = new mySubMenu(menuPoint);
-                    submenu.visible(true);
-                    subMenuFlag = true;
-                }
-                if(menu.openFlag == false)
-                    menuFlag = false;
             }
+            else if(menu.downFlag){
+                println("down!");
+            }
+            else if(menu.rightFlag){
+                chatFlag = true;
+                chatField.setMessage("チャットモードを起動しています...");
+            }
+            else if(menu.leftFlag){
+                submenu = new mySubMenu(menuPoint);
+                submenu.visible(true);
+                subMenuFlag = true;
+            }
+            if(menu.openFlag == false)
+                menuFlag = false;
+        }
 
-            //fold menu when down hand
-            if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
-                menu.visible(false);
-            }
+        //fold menu when down hand
+        if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+            menu.visible(false);
         }
-        else if(subMenuFlag){
-            menuFlag = false;
-
-            /* if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
-                submenu.visible(false);
-                }*/
-            if(submenu.openFlag == false && submenu.visibleFlag == false){
-                subMenuFlag = false;
-            }
+    }
+    else if(subMenuFlag){
+        menuFlag = false;
+            
+        /* if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+           submenu.visible(false);
+           }*/
+        if(submenu.openFlag == false && submenu.visibleFlag == false){
+            subMenuFlag = false;
         }
-        else if(colorMenuFlag){
-            if(PVector.dist(leftHandPosBuf,menuPoint) > lenMenuTrigger){
-                colormenu.visible(false);
-            }
-            if(colormenu.openFlag == false && colormenu.visibleFlag == false){
-                colorMenuFlag = false;
-            }
-            demoFlag = true;
+    }
+    else if(colorMenuFlag){
+        if(PVector.dist(leftHandPosBuf,menuPoint) > lenMenuTrigger){
+            colormenu.visible(false);
         }
-        else if(makeCharFlag){
-            int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
-            float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
+        if(colormenu.openFlag == false && colormenu.visibleFlag == false){
+            colorMenuFlag = false;
+        }
+        demoFlag = true;
+    }
+    else if(makeCharFlag){
+        int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
+        float rotateAngle = degrees(abs(atan2(leftHandPosBuf.x-rightHandPosBuf.x,leftHandPosBuf.y-rightHandPosBuf.y)));
         
-            if(iconExpandSize < 100)
-                iconExpandSize = 99;
+        if(iconExpandSize < 100)
+            iconExpandSize = 99;
 
-            //print star image
-            image(imgLeftHand,
-                  makeCharPoint.x-iconExpandSize/2,
-                  makeCharPoint.y-iconExpandSize/2,
-                  iconExpandSize,
-                  iconExpandSize);
+        //print star image
+        image(imgLeftHand,
+              makeCharPoint.x-iconExpandSize/2,
+              makeCharPoint.y-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
 
-            int rowCharTable = convertRangeToRowNum(iconExpandSize);
-            int columnCharTable = convertAngleToColumnNum(rotateAngle);
-            float iconRotate = convertAngleToIconAngle(rotateAngle);
+        int rowCharTable = convertRangeToRowNum(iconExpandSize);
+        int columnCharTable = convertAngleToColumnNum(rotateAngle);
+        float iconRotate = convertAngleToIconAngle(rotateAngle);
 
 
-            //行列番号遷移の確認とSE再生
-            if(rowNumBuf < rowCharTable)
-                openSound_2.play(0);
-            else if(rowNumBuf > rowCharTable)
-                openSound_1.play(0);
+        //行列番号遷移の確認とSE再生
+        if(rowNumBuf < rowCharTable)
+            openSound_2.play(0);
+        else if(rowNumBuf > rowCharTable)
+            openSound_1.play(0);
 
-            if(columnNumBuf != columnCharTable)
-                rotateSound.play(0);
+        if(columnNumBuf != columnCharTable)
+            rotateSound.play(0);
 
-            rowNumBuf = rowCharTable;
-            columnNumBuf = columnCharTable;
+        rowNumBuf = rowCharTable;
+        columnNumBuf = columnCharTable;
 
-            //print arrow image
-            pushMatrix();
-            translate(makeCharPoint.x, makeCharPoint.y);
-            rotate(radians(iconRotate));
-            translate(-(makeCharPoint.x), -(makeCharPoint.y));
-            image(imgRightHand,
-                  makeCharPoint.x-iconExpandSize/2,
-                  makeCharPoint.y-iconExpandSize/2,
-                  iconExpandSize,
-                  iconExpandSize);
-            popMatrix();
+        //print arrow image
+        pushMatrix();
+        translate(makeCharPoint.x, makeCharPoint.y);
+        rotate(radians(iconRotate));
+        translate(-(makeCharPoint.x), -(makeCharPoint.y));
+        image(imgRightHand,
+              makeCharPoint.x-iconExpandSize/2,
+              makeCharPoint.y-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
+        popMatrix();
 
-            //text output
-            textSize(iconExpandSize-60);
-            textAlign(CENTER);
-            fill(255);
+        //text output
+        textSize(iconExpandSize-60);
+        textAlign(CENTER);
+        fill(255);
 
-            //set character
-            if(komojiFlag){
-                text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+        //set character
+        if(komojiFlag){
+            text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
             
-                //deside Char
-                if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
-                    inputBuffer = inputBuffer.concat(String.valueOf(komojiTable[rowCharTable][columnCharTable]));
-                    makeCharFlag = false;
-                    demoFlag = true;
-                }
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                inputBuffer = inputBuffer.concat(String.valueOf(komojiTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
             }
-            else if(dakutenFlag){
-                text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+        }
+        else if(dakutenFlag){
+            text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
 
-                //deside Char
-                if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
-                    pushSound.play(0);
-                    inputBuffer = inputBuffer.concat(String.valueOf(dakutenTable[rowCharTable][columnCharTable]));
-                    makeCharFlag = false;
-                    demoFlag = true;
-                }
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
+                inputBuffer = inputBuffer.concat(String.valueOf(dakutenTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
             }
-            else if(handakuFlag){
-                text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+        }
+        else if(handakuFlag){
+            text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
 
-                //deside Char
-                if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
-                    pushSound.play(0);
-                    inputBuffer = inputBuffer.concat(String.valueOf(handakuTable[rowCharTable][columnCharTable]));
-                    makeCharFlag = false;
-                    demoFlag = true;
-                }
-            }
-            else{
-                text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
-            
-                //deside Char
-                if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
-                    pushSound.play(0);
-                    inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
-                    makeCharFlag = false;
-                    demoFlag = true;
-                }
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
+                inputBuffer = inputBuffer.concat(String.valueOf(handakuTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
             }
         }
         else{
-            //print image on left hand
-            image(imgLeftHand,
-                  leftHandPosBuf.x-iconSize/2,
-                  leftHandPosBuf.y-iconSize/2,
-                  iconSize,
-                  iconSize);
-        
-            //print image on right hand
-            image(imgRightHand,
-                  rightHandPosBuf.x-iconSize/2,
-                  rightHandPosBuf.y-iconSize/2,
-                  iconSize,
-                  iconSize);
-        
-            if(torsoPos.y < 450){
-                if(chatFlag && !jumpFlag){
-                    jumpFlag = true;
-                    sendSound.play(0);
-                    chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
-                    inputBuffer = "";
-                }
-            }
-            else{
-                jumpFlag = false;
-            }
-        
-            //check MenuMode and MakeCharMode
-            if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
-                makeCharFlag = true;
-                makeSound.play(0);
-                makeCharPoint.set(rightHandPosBuf);
-            }
-            else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
-                menuPoint.set(rightHandPosBuf);
-                /*
-                  submenu = new mySubMenu(menuPoint);
-                  submenu.visible(true);
-                  subMenuFlag = true;
-                */
+            text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
             
-                menuFlag = true;
-                menu = new myMenu(menuPoint);
-                menu.visible(true);
-            }
-            else if(abs(leftHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
-                menuPoint.set(leftHandPosBuf);
-                colorMenuFlag = true;
-                colormenu = new myColorMenu(menuPoint);
-                colormenu.visible(true);
+            //deside Char
+            if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
+                pushSound.play(0);
+                inputBuffer = inputBuffer.concat(String.valueOf(kanaTable[rowCharTable][columnCharTable]));
+                makeCharFlag = false;
+                demoFlag = true;
             }
         }
+    }
+    else{
+        //print image on left hand
+        image(imgLeftHand,
+              leftHandPosBuf.x-iconSize/2,
+              leftHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        //print image on right hand
+        image(imgRightHand,
+              rightHandPosBuf.x-iconSize/2,
+              rightHandPosBuf.y-iconSize/2,
+              iconSize,
+              iconSize);
+        
+        if(torsoPos.y < 450){
+            if(chatFlag && !jumpFlag){
+                jumpFlag = true;
+                sendSound.play(0);
+                chat.writeExString(inputBuffer,fontColor,fontType,fontSize,boldFlag);
+                inputBuffer = "";
+            }
+        }
+        else{
+            jumpFlag = false;
+        }
+        
+        //check MenuMode and MakeCharMode
+        if(PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMakeTrigger){
+            makeCharFlag = true;
+            makeSound.play(0);
+            makeCharPoint.set(rightHandPosBuf);
+        }
+        else if(abs(rightHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            menuPoint.set(rightHandPosBuf);
+            /*
+              submenu = new mySubMenu(menuPoint);
+              submenu.visible(true);
+              subMenuFlag = true;
+            */
+            outputCheck = false;
+            menuFlag = true;
+            menu = new myMenu(menuPoint);
+            menu.visible(true);
+        }
+        else if(abs(leftHandPosBuf.z-torsoPos.z) > lenMenuTrigger){
+            menuPoint.set(leftHandPosBuf);
+            colorMenuFlag = true;
+            colormenu = new myColorMenu(menuPoint);
+            colormenu.visible(true);
+        }
+    }
 }
 
 //convert Angle made by two hands to icons rotate angle
@@ -1002,45 +1005,45 @@ void onEndPose(String pose,int userId)
 
 
 
-    else if(menuFlag){
-            //メニューが閉じきったらフラグを確認する。
-            if(menu.visibleFlag == false){
-                if(menu.upFlag){
-                    outputFile.writeFile(inputBuffer);
-                }
-                else if(menu.downFlag){
-                    println("down!");
-                }
-                else if(menu.rightFlag){
-                    chatFlag = true;
-                    println("チャットモードを起動しています！");
-                }
-                else if(menu.leftFlag){
-                    submenu = new mySubMenu(menuPoint);
-                    submenu.visible(true);
-                    subMenuFlag = true;
-                }
-                if(menu.openFlag == false)
-                    menuFlag = false;
+  else if(menuFlag){
+  //メニューが閉じきったらフラグを確認する。
+  if(menu.visibleFlag == false){
+  if(menu.upFlag){
+  outputFile.writeFile(inputBuffer);
+  }
+  else if(menu.downFlag){
+  println("down!");
+  }
+  else if(menu.rightFlag){
+  chatFlag = true;
+  println("チャットモードを起動しています！");
+  }
+  else if(menu.leftFlag){
+  submenu = new mySubMenu(menuPoint);
+  submenu.visible(true);
+  subMenuFlag = true;
+  }
+  if(menu.openFlag == false)
+  menuFlag = false;
         
-            }
+  }
 
        
-            //手を引くとメニューを閉じる。
-            if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
-                menu.visible(false);
-            }
+  //手を引くとメニューを閉じる。
+  if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+  menu.visible(false);
+  }
 
-        }
-        else if(subMenuFlag){
-            menuFlag = false;
-            if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
-                submenu.visible(false);
-            }
-            if(submenu.openFlag == false && submenu.visibleFlag == false){
-                subMenuFlag = false;
-            }
-        }
+  }
+  else if(subMenuFlag){
+  menuFlag = false;
+  if(PVector.dist(rightHandPosBuf,menuPoint) > lenMenuTrigger){
+  submenu.visible(false);
+  }
+  if(submenu.openFlag == false && submenu.visibleFlag == false){
+  subMenuFlag = false;
+  }
+  }
 
 */
 
