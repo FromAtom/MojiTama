@@ -135,7 +135,8 @@ boolean locked = false;
 color buttoncolor = color(244);
 color highlight = color(153);
 color currentcolor;
-color timecolor = #FF9200;
+color timecolor = #ffAA00;
+//color timecolor = #5DEEEA;
 PImage imgCore,imgUp,imgDown,imgRight,imgLeft;
 PImage imgSize,imgType,imgColor,imgBold;
 
@@ -198,11 +199,12 @@ void setup()
     context.setMirror(true);
 
     //Load & Set Fonts
-    myFont = loadFont("Migu-1P-Regular-48.vlw");
+    //myFont = loadFont("Migu-1P-Regular-48.vlw");
+    myFont = loadFont("HiraginoKaku.vlw");
     textFont(myFont);
 
     //for use file
-    outputFile = new useFile("demo.txt");
+    outputFile = new useFile("output.txt");
 
     colorMode(RGB);
     background(0);

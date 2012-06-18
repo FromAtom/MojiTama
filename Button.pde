@@ -116,7 +116,7 @@ class CircleButton extends Button
         if(onTime > 0){
             noFill();
             stroke(timecolor);
-            strokeWeight(15);
+            strokeWeight(11);
             arc(x, y, size, size, 0, radians(onTime));
         }
     }
