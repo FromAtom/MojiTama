@@ -127,7 +127,7 @@ int columnCharTable = 0;
 
 
 /*input String buffer*/
-String inputBuffer = "死は近い！！！";
+String inputBuffer = "";
 
 
 /*for menu*/
@@ -508,8 +508,7 @@ void drawSkeleton(int userId)
 
     if(demoFlag){
         if((PVector.dist(rightHandPosBuf,leftHandPosBuf) < lenMenuTrigger) &&
-           (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger) &&
-           (PVector.dist(leftHandPosBuf,menuPoint) < lenMenuTrigger)){
+           (abs(rightHandPosBuf.z-torsoPos.z) < lenMakeCharTrigger)){
             demoFlag = false;
             makeCharFlag = false;
         }
@@ -563,7 +562,7 @@ void drawSkeleton(int userId)
             colorMenuFlag = false;
         }
         demoFlag = true;
-        makeCharFlag = true;
+        // makeCharFlag = true;
     }
     else if(makeCharFlag){
         int iconExpandSize = (int)PVector.dist(rightHandPosBuf,leftHandPosBuf);
@@ -673,7 +672,9 @@ void drawSkeleton(int userId)
               iconSize,
               iconSize);
         
-        if(torsoPos.y < 450){
+        println(torsoPos.y);
+
+        if(torsoPos.y < 500){
             if(chatFlag && !jumpFlag){
                 jumpFlag = true;
                 sendSound.play(0);
