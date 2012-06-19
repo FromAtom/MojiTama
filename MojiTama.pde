@@ -85,7 +85,7 @@ PImage imgBubble;
 boolean makeCharFlag = false;
 boolean demoFlag = false;
 boolean jumpFlag = false;
-boolean chatFlag = true;
+boolean chatFlag = false;
 boolean menuFlag = false;
 boolean subMenuFlag = false;
 boolean colorMenuFlag = false;
@@ -499,13 +499,13 @@ void drawSkeleton(int userId)
         
     //one character clear from ibuffer
     if(menuFlag == false && makeCharFlag == false){
-        if(abs(leftHandPos.x-torsoPos.x) > 270){
+        if(abs(leftHandPos.x-torsoPos.x) > 300){
             if(delFlag == false){
                 clear_ibuffer();
                 one_delete.play(0);
             }
             delFlag = true;
-        }else if(abs(leftHandPos.x-torsoPos.x) <100){
+        }else if(abs(leftHandPos.x-torsoPos.x) <150){
             delFlag = false;
         }
     }else if(makeCharFlag){
@@ -513,13 +513,13 @@ void drawSkeleton(int userId)
     }
     //all character clear from ibuffer
     if(menuFlag == false && makeCharFlag == false){
-        if(abs(rightHandPos.x-torsoPos.x) > 270){
+        if(abs(rightHandPos.x-torsoPos.x) > 300){
             if(delAllFlag == false){
                 clearAll_ibuffer();
                 all_delete.play(0);
             }
             delAllFlag = true;
-        }else if(abs(rightHandPos.x-torsoPos.x) < 100){
+        }else if(abs(rightHandPos.x-torsoPos.x) < 150){
             delAllFlag = false;
         }
     }else if(makeCharFlag){
