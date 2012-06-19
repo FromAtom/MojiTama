@@ -113,6 +113,10 @@ boolean delAllFlag = false;
 
 /*Fonts*/
 PFont myFont;
+PFont gothicFont;
+PFont gothicBoldFont;
+PFont minchoFont;
+PFont minchoBoldFont;
 
 /*for FullScreen*/
 FullScreen fs;
@@ -211,6 +215,11 @@ void setup()
 
     //Load & Set Fonts
     myFont = loadFont("Migu-1P-Regular-48.vlw");
+    gothicFont = loadFont("gothic.vlw");
+    gothicBoldFont = loadFont("gothicBold.vlw");
+    minchoFont = loadFont("mincho.vlw");
+    minchoBoldFont = loadFont("minchoBold.vlw");
+
     //myFont = loadFont("HiraginoKaku.vlw");
     textFont(myFont);
 
@@ -341,6 +350,19 @@ void setFontOption(int fColor, int fType, boolean bFlag)
     String c = "FF" + COLOR_NAME[fColor].substring(1);
     fill(unhex(c));
     fontType = fType;
+    if(fontType == FONT_MINCHO){
+        if(boldFlag)
+            textFont(minchoBoldFont);
+        else
+            textFont(minchoFont);
+    }
+    else{
+        if(boldFlag)
+            textFont(gothicBoldFont);
+        else
+            textFont(gothicFont);
+    }
+
     boldFlag = bFlag;
     textAlign(LEFT);
 }
