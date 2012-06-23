@@ -147,6 +147,7 @@ PImage imgCore,imgUp,imgDown,imgRight,imgLeft;
 PImage imgSize,imgType,imgColor,imgBold;
 PImage imgThick,imgFine,imgMincho,imgGothic;
 PImage imgBlack,imgRed,imgBlue,imgGreen,imgYellow,imgWhite;
+PImage imgNormal,imgDakuten,imgHandaku;
 
 myMenu menu;
 mySubMenu submenu;
@@ -257,6 +258,11 @@ void setup()
     this.imgGreen = loadImage("green.png");
     this.imgYellow = loadImage("yellow.png");
     this.imgWhite = loadImage("white.png");
+    
+    this.imgNormal = loadImage("normal.png");
+    this.imgDakuten = loadImage("dakuten.png");
+    this.imgHandaku = loadImage("handaku.png");
+
 
 
     //SOUNDs
@@ -300,6 +306,13 @@ void draw()
 
     //print bubble image
     image(imgBubble, 20, 20,imgBubble.width-20,imgBubble.height-20);
+    
+    if(handakuFlag)
+        image(imgHandaku, 35, 140);
+    else if(dakutenFlag)
+        image(imgDakuten, 35, 140);
+    else
+        image(imgNormal, 35, 140);
 
     if(fontSize == FONT_SIZE_NORMAL){
         textSize(64);
