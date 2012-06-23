@@ -55,6 +55,7 @@ final int FONT_SIZE_SMALL = 1;
 final int MODE_SERVER = 0;
 final int MODE_CLIENT = 1;
 
+
 /*Size of images*/
 final int iconSize = 200;
 final int menuSize = 300;
@@ -240,10 +241,10 @@ void setup()
     this.imgUp = loadImage("save.png");
     this.imgDown = loadImage("cancel.png");
 
-    this.imgType = loadImage("type.png");
+    this.imgType = loadImage("submenu2.png");
     this.imgColor = loadImage("color.png");
     this.imgSize = loadImage("size.png");
-    this.imgBold = loadImage("bold.png");
+    this.imgBold = loadImage("submenu1.png");
 
     this.imgGothic = loadImage("gothic.png");
     this.imgMincho = loadImage("type.png");
@@ -593,23 +594,19 @@ void drawSkeleton(int userId)
         if(iconExpandSize < 100)
             iconExpandSize = 99;
 
-        //print star image
-        image(imgLeftHand,
-              makeCharPoint.x-iconExpandSize/2,
-              makeCharPoint.y-iconExpandSize/2,
-              iconExpandSize,
-              iconExpandSize);
-
+       
         int rowCharTable = convertRangeToRowNum(iconExpandSize);
         int columnCharTable = convertAngleToColumnNum(rotateAngle);
         float iconRotate = convertAngleToIconAngle(rotateAngle);
 
 
         //行列番号遷移の確認とSE再生
-        if(rowNumBuf < rowCharTable)
+        if(rowNumBuf < rowCharTable){
             openSound_2.play(0);
-        else if(rowNumBuf > rowCharTable)
+        }
+        else if(rowNumBuf > rowCharTable){
             openSound_1.play(0);
+        }
 
         if(columnNumBuf != columnCharTable)
             rotateSound.play(0);
@@ -617,6 +614,34 @@ void drawSkeleton(int userId)
         rowNumBuf = rowCharTable;
         columnNumBuf = columnCharTable;
 
+
+        //text output
+        textSize(iconExpandSize-60);
+        textAlign(CENTER);
+        fill(255);
+
+        float iconPointY = makeCharPoint.y+(textDescent()-textAscent())/2.0;
+
+        //print star image
+        image(imgLeftHand,
+              makeCharPoint.x-iconExpandSize/2,
+              iconPointY-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
+
+        //print arrow image
+        pushMatrix();
+        translate(makeCharPoint.x, iconPointY);
+        rotate(radians(iconRotate));
+        translate(-(makeCharPoint.x), -(iconPointY));
+        image(imgRightHand,
+              makeCharPoint.x-iconExpandSize/2,
+              iconPointY-iconExpandSize/2,
+              iconExpandSize,
+              iconExpandSize);
+        popMatrix();
+
+        /*
         //print arrow image
         pushMatrix();
         translate(makeCharPoint.x, makeCharPoint.y);
@@ -628,15 +653,12 @@ void drawSkeleton(int userId)
               iconExpandSize,
               iconExpandSize);
         popMatrix();
+        */
 
-        //text output
-        textSize(iconExpandSize-60);
-        textAlign(CENTER);
-        fill(255);
-
+     
         //set character
         if(komojiFlag){
-            text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            text(komojiTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y);
             
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
@@ -646,7 +668,7 @@ void drawSkeleton(int userId)
             }
         }
         else if(dakutenFlag){
-            text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            text(dakutenTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y);
 
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
@@ -657,7 +679,7 @@ void drawSkeleton(int userId)
             }
         }
         else if(handakuFlag){
-            text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            text(handakuTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y);
 
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
@@ -668,7 +690,7 @@ void drawSkeleton(int userId)
             }
         }
         else{
-            text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y+textDescent());
+            text(kanaTable[rowCharTable][columnCharTable],makeCharPoint.x,makeCharPoint.y);
             
             //deside Char
             if(abs(rightHandPosBuf.z-torsoPos.z) > lenMakeCharTrigger){
