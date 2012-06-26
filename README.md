@@ -7,9 +7,9 @@ Kinectを用いて、身体動作で文字入力を行うアプリです。
 
 ##起動方法
 
-- MojiTamaをダブルクリック
+- MojiTamaのショートカットをダブルクリック
 
-- Ctrl+Rで起動（Shift+Ctrl+Rで全画面起動）
+- Ctrl+RでRUN（Shift+Ctrl+Rで全画面起動）
  
 
 ##使い方
